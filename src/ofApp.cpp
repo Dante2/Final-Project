@@ -74,10 +74,10 @@ void ofApp::draw(){
     
     //Draw MFCC values:
     ofSetColor(0, 255, 0,255);
-    float xinc = 190.0 / 13;
+    float xinc = 500.0 / 13;
     for(int i=0; i < 13; i++) {
         float height = mfccs[i] * 200.0;
-        ofRect(10 + (i*xinc),200 - height,10, height);
+        ofRect(100 + (i*xinc),200 - height,30, height);
     }
     
     //Send OSC:
@@ -85,6 +85,7 @@ void ofApp::draw(){
     m.setAddress("/wek/inputs");
     for (int i = 0; i < 13; i++) {
         m.addFloatArg(mfccs[i]);
+        cout << "mfcc " << i << " = " << mfccs[i] << endl;
     }
     sender.sendMessage(m);
 }
