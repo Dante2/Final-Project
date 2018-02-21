@@ -1,7 +1,6 @@
 #ifndef _TEST_APP
 #define _TEST_APP
 
-
 #include "ofMain.h"
 #include "ofxMaxim.h"
 
@@ -37,8 +36,7 @@ public:
     float * rAudioIn;
     
     int        initialBufferSize; /* buffer size */
-    int        sampleRate;
-    
+    int        sampleRate;    
     
     /* stick your maximilian stuff below */
     double wave;

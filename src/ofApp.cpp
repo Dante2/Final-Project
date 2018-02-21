@@ -4,7 +4,6 @@
  
  */
 
-
 #include "ofApp.h"
 #include "maximilian.h"/* include the lib */
 #include "time.h"
@@ -117,6 +116,8 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         rAudioIn[i] = input[i*2+1];
     }
 }
+
+/* 'audioRequested' and 'audioReceived' have both been changed to 'audioIn' and 'audioOut'. Also the project is currently set up without the channels for audio output. The synth I have built for AVP is set up with that and so when these sets of code et integrated the project shall contain those methods */
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
