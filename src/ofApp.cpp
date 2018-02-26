@@ -112,67 +112,55 @@ void ofApp::update(){
     ofxOscMessage m;
     m.setAddress("/wek/inputs");
     
-    if (fftToggle) {
-        // cout << "FFT" << endl;
-        //m.setAddress("/fft");
-        for (int i = 0; i < fftSize/2; i++) {
-            m.addFloatArg(mfft.magnitudes[i]);
-            
-        }
-        // sender.sendMessage(m);
+//    if (fftToggle) {
+//        // cout << "FFT" << endl;
+//        //m.setAddress("/fft");
+//        for (int i = 0; i < fftSize/2; i++) {
+//            m.addFloatArg(mfft.magnitudes[i]);
+//
+//        }
+//        // sender.sendMessage(m);
+//    }
+//
+    
+//    if (peakFrequencyToggle) {
+//        // cout << "peak" << endl;
+//
+//        //ofxOscMessage m;
+//        // m.setAddress("/peakFrequency");
+//        m.addFloatArg(peakFreq);
+//        // sender.sendMessage(m);
+//    }
+//
+//    if (centroidToggle) {
+//        // cout << "centr" << endl;
+//
+//        //// ofxOscMessage m;
+//        // m.setAddress("/centroid");
+//        m.addFloatArg(centroid);
+//        // sender.sendMessage(m);
+//    }
+    if (rmsToggle) {
+        
+        cout << "rms" << endl;
+        
+        ofxOscMessage m;
+        m.setAddress("/wek/inputs");
+        m.addFloatArg(RMS);
+        sender.sendMessage(m);
     }
+    sender.sendMessage(m);
     
     if (mfccToggle) {
-        //cout << "mfcc" << endl;
+        cout << "mfcc" << endl;
         
-        // ofxOscMessage m;
-        // m.setAddress("/mfccs");
+        ofxOscMessage m;
+        m.setAddress("/wek/inputs");
         for (int i = 0; i < 13; i++) {
             m.addFloatArg(mfccs[i]);
         }
-        //sender.sendMessage(m);
+        sender.sendMessage(m);
     }
-    
-    
-    if (chromagramToggle) {
-        // cout << "chrm" << endl;
-        
-        // ofxOscMessage m;
-        // m.setAddress("/octaveBins");
-        for (int i = 0; i < oct.nAverages; i++) {
-            m.addFloatArg(oct.averages[i]);
-            //cout << i << endl;
-        }
-        // sender.sendMessage(m);
-    }
-    
-    if (peakFrequencyToggle) {
-        // cout << "peak" << endl;
-        
-        //ofxOscMessage m;
-        // m.setAddress("/peakFrequency");
-        m.addFloatArg(peakFreq);
-        // sender.sendMessage(m);
-    }
-    
-    if (centroidToggle) {
-        // cout << "centr" << endl;
-        
-        //// ofxOscMessage m;
-        // m.setAddress("/centroid");
-        m.addFloatArg(centroid);
-        // sender.sendMessage(m);
-    }
-    if (rmsToggle) {
-        
-        // cout << "rms" << endl;
-        
-        // ofxOscMessage m;
-        // m.setAddress("/rms");
-        m.addFloatArg(RMS);
-        // sender.sendMessage(m);
-    }
-    sender.sendMessage(m);
     
     
 }
