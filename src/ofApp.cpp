@@ -110,7 +110,7 @@ void ofApp::setup(){
 void ofApp::update(){
     
     ofxOscMessage m;
-    m.setAddress("/wek/inputs");
+//    m.setAddress("/wek/inputs");
     
 //    if (fftToggle) {
 //        // cout << "FFT" << endl;
