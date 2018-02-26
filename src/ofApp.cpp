@@ -59,6 +59,7 @@ void ofApp::setup(){
     
     mfccs = (double*) malloc(sizeof(double) * 13);
     mfcc.setup(512, 42, 13, 20, 20000, sampleRate);
+    std::cout << mfccs << endl;
     
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
     ofSoundStreamSetup(2,2, this, sampleRate, initialBufferSize, 4);/* Call this last ! */
@@ -66,11 +67,11 @@ void ofApp::setup(){
     
     //GUI STUFF
     gui.setup(); // most of the time you don't need a name
-    gui.add(fftToggle.setup("FFT bin magnitudes (pitch/timbre/volume) (512 inputs)", true));
+    //gui.add(fftToggle.setup("FFT bin magnitudes (pitch/timbre/volume) (512 inputs)", true));
     gui.add(mfccToggle.setup("MFCCs (timbre/vocal) (13 inputs)", true));
-    gui.add(chromagramToggle.setup("Const-Q analyser (12 bands/oct) (104 inputs)", true));
-    gui.add(peakFrequencyToggle.setup("Peak frequency (pitch) (1 input)", true));
-    gui.add(centroidToggle.setup("Spectral centroid (timbre) (1 input)", true));
+    //gui.add(chromagramToggle.setup("Const-Q analyser (12 bands/oct) (104 inputs)", true));
+    //gui.add(peakFrequencyToggle.setup("Peak frequency (pitch) (1 input)", true));
+    //gui.add(centroidToggle.setup("Spectral centroid (timbre) (1 input)", true));
     gui.add(rmsToggle.setup("RMS (volume) (1 input)", true));
     
     bHide = true;
@@ -147,10 +148,11 @@ void ofApp::update(){
 //        m.addFloatArg(0);
 //    }
     
-    // if (input > 3){
-    //rmsToggle;
+/* currently set up with threshold so that if rms goes above threshold it sends out osc message. In this way rms is now a bolean switch */
     
     if (rmsToggle) {
+        
+        if (RMS > 2){
         
         cout << "rms" << endl;
         
@@ -160,7 +162,9 @@ void ofApp::update(){
             m.addFloatArg(RMS);
         }
     sender.sendMessage(m);
+    cout << "rms = " << RMS << endl;
     }
+}
     
     else if
         (mfccToggle) {
@@ -170,10 +174,14 @@ void ofApp::update(){
         m.setAddress("/wek/inputs");
         for (int i = 0; i < 13; i++) {
             m.addFloatArg(mfccs[i]);
+            cout << "mfccs = " << mfccs[i] << endl;
         }
         sender.sendMessage(m);
+        
     }
 //}
+    
+    // perhaps neccesary to add an else statement here to set it to mfcc by default? This way we keep it listening to stuff and only activating if it hears one or the other as when necessary
     
 }
 
