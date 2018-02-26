@@ -109,7 +109,7 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofxOscMessage m;
+//    ofxOscMessage m;
 //    m.setAddress("/wek/inputs");
     
 //    if (fftToggle) {
@@ -140,16 +140,21 @@ void ofApp::update(){
 //        m.addFloatArg(centroid);
 //        // sender.sendMessage(m);
 //    }
+    
+    ofxOscMessage m;
+    m.setAddress("/wek/inputs");
+    
     if (rmsToggle) {
         
         cout << "rms" << endl;
         
         ofxOscMessage m;
         m.setAddress("/wek/inputs");
-        m.addFloatArg(RMS);
-        sender.sendMessage(m);
-    }
+        for (int i = 0; i < 13; i++) {
+            m.addFloatArg(RMS);
+        }
     sender.sendMessage(m);
+    }
     
     if (mfccToggle) {
         cout << "mfcc" << endl;
