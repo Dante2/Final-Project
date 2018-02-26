@@ -143,6 +143,12 @@ void ofApp::update(){
     
     ofxOscMessage m;
     m.setAddress("/wek/inputs");
+//    for (int i = 0; i < 13; i++) {
+//        m.addFloatArg(0);
+//    }
+    
+    // if (input > 3){
+    //rmsToggle;
     
     if (rmsToggle) {
         
@@ -156,7 +162,8 @@ void ofApp::update(){
     sender.sendMessage(m);
     }
     
-    if (mfccToggle) {
+    else if
+        (mfccToggle) {
         cout << "mfcc" << endl;
         
         ofxOscMessage m;
@@ -166,7 +173,7 @@ void ofApp::update(){
         }
         sender.sendMessage(m);
     }
-    
+//}
     
 }
 
