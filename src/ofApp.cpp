@@ -86,72 +86,102 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofxOscMessage m;
+    ofxOscMessage m, n;
     
     // receive messages
+    
     // hide old messages
-    for(int i = 0; i < NUM_MSG_STRINGS; i++){
-        if(timers[i] < ofGetElapsedTimef()){
-            msg_strings[i] = "";
-            //std::cout << msg_strings[i] << endl;
-        }
-    }
+//    for(int i = 0; i < NUM_MSG_STRINGS; i++){
+//        if(timers[i] < ofGetElapsedTimef()){
+//            msg_strings[i] = "";
+//            //std::cout << msg_strings[i] << endl;
+//
+//            // std::cout << "NUM_MSG_STRINGS = " << NUM_MSG_STRINGS << endl;
+//        }
+//    }
     
     // check for waiting messages
-    while(receiver.hasWaitingMessages()){
+    //while(receiver.hasWaitingMessages()){
         // get the next message
-        // ofxOscMessage m;
-        receiver.getNextMessage(m);
-        
+
+        // ofxOscMessage n;
+        // n.setAddress("/wek/outputs");
+        //cout << "frm weki = " << n << endl;
+    
+//        receiver.getNextMessage(n);
+//        cout << "frm weki = " << receiver.getNextMessage(n) << endl;
+    
         // check for mouse moved message
-        if(m.getAddress() == "/mouse/position"){
+        if(n.getAddress() == "/mouse/position"){
             // both the arguments are int32's
-            mouseX = m.getArgAsInt32(0);
-            mouseY = m.getArgAsInt32(1);
+            mouseX = n.getArgAsInt32(0);
+            mouseY = n.getArgAsInt32(1);
+
         }
-//        // check for mouse button message
-//        else if(m.getAddress() == "/mouse/button"){
-//            // the single argument is a string
-//            mouseButtonState = m.getArgAsString(0);
-//        }
+//
+//    std::cout << "mouse x = " << mouseX << endl;
+//    std::cout << "mouse y = " << mouseY << endl;
+    
+    if(n.getAddress() == "/wek/outputs"){
+        // both the arguments are int32's
+//        mouseX = m.getArgAsInt32(0);
+//        mouseY = m.getArgAsInt32(1);
+        
+    }
+    
+    std::cout << "weki out = yay " << endl;
         
         // add to the list of strings to display
-        string msg_string;
-        msg_strings[current_msg_string] = msg_string;
-        timers[current_msg_string] = ofGetElapsedTimef() + 5.0f;
-        current_msg_string = (current_msg_string + 1) % NUM_MSG_STRINGS;
-        // clear the next line
-        msg_strings[current_msg_string] = "";
-    }
+//        string msg_string;
+//        msg_strings[current_msg_string] = msg_string;
+        //std::cout << "msg_strings = " << msg_string << endl;
+        
+//        timers[current_msg_string] = ofGetElapsedTimef() + 5.0f;
+//        std::cout << "timers = " << timers << endl;
+//
+//        current_msg_string = (current_msg_string + 1) % NUM_MSG_STRINGS;
+//        std::cout << "current_msg_string = " << current_msg_string << endl;
+        
+         //clear the next line
+//        msg_strings[current_msg_string] = "";
+//    }
     
 
     
     // sending messages
     // ofxOscMessage m;
-    m.setAddress("/wek/inputs");
+    // m.setAddress("/wek/inputs");
     
     if (rmsToggle) {
-        if (RMS > 2){
+        if (RMS > 0.2){
         //ofxOscMessage m;
         m.setAddress("/wek/inputs");
         for (int i = 0; i < 13; i++) {
-            m.addFloatArg(RMS);
+            m.addFloatArg(mfccs[i]);
         }
     sender.sendMessage(m);
-    //cout << "rms = " << RMS << endl;
+    cout << "m = " << m.getAddress() << endl;
     }
 }
     
-    else if
-        (mfccToggle) {
-        // ofxOscMessage m;
-        m.setAddress("/wek/inputs");
-        for (int i = 0; i < 13; i++) {
-            m.addFloatArg(mfccs[i]);
-            //cout << "mfccs = " << mfccs[i] << endl;
-        }
-        sender.sendMessage(m);
-    }
+//    else if
+//        (mfccToggle) {
+//        // ofxOscMessage m;
+//        m.setAddress("/wek/inputs");
+//        for (int i = 0; i < 13; i++) {
+//            m.addFloatArg(mfccs[i]);
+//            //cout << "mfccs = " << mfccs[i] << endl;
+//        }
+//        sender.sendMessage(m);
+//    }
+//
+    // recieving messages
+    
+    // This is how to send message to weki to sart recording.
+    // http://www.wekinator.org/detailed-instructions/#Customizing_DTW8217s_behavior
+    // /wekinator/control/startDtwRecording
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -176,6 +206,7 @@ void ofApp::draw(){
     
     for(int i = 0; i < NUM_MSG_STRINGS; i++){
         ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
+        //std::cout << "msg string" << msg_strings[i] << endl;
     }
     
 //    //FFT magnitudes:
