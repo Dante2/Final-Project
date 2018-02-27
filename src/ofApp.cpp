@@ -86,44 +86,69 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    ofxOscMessage m;
+    
     // receive messages
     // hide old messages
     for(int i = 0; i < NUM_MSG_STRINGS; i++){
         if(timers[i] < ofGetElapsedTimef()){
             msg_strings[i] = "";
+            //std::cout << msg_strings[i] << endl;
         }
     }
     
     // check for waiting messages
     while(receiver.hasWaitingMessages()){
         // get the next message
-        ofxOscMessage m;
+        // ofxOscMessage m;
         receiver.getNextMessage(m);
+        
+        // check for mouse moved message
+        if(m.getAddress() == "/mouse/position"){
+            // both the arguments are int32's
+            mouseX = m.getArgAsInt32(0);
+            mouseY = m.getArgAsInt32(1);
+        }
+//        // check for mouse button message
+//        else if(m.getAddress() == "/mouse/button"){
+//            // the single argument is a string
+//            mouseButtonState = m.getArgAsString(0);
+//        }
+        
+        // add to the list of strings to display
+        string msg_string;
+        msg_strings[current_msg_string] = msg_string;
+        timers[current_msg_string] = ofGetElapsedTimef() + 5.0f;
+        current_msg_string = (current_msg_string + 1) % NUM_MSG_STRINGS;
+        // clear the next line
+        msg_strings[current_msg_string] = "";
+    }
     
+
     
     // sending messages
-    ofxOscMessage m;
+    // ofxOscMessage m;
     m.setAddress("/wek/inputs");
     
     if (rmsToggle) {
         if (RMS > 2){
-        ofxOscMessage m;
+        //ofxOscMessage m;
         m.setAddress("/wek/inputs");
         for (int i = 0; i < 13; i++) {
             m.addFloatArg(RMS);
         }
     sender.sendMessage(m);
-    cout << "rms = " << RMS << endl;
+    //cout << "rms = " << RMS << endl;
     }
 }
     
     else if
         (mfccToggle) {
-        ofxOscMessage m;
+        // ofxOscMessage m;
         m.setAddress("/wek/inputs");
         for (int i = 0; i < 13; i++) {
             m.addFloatArg(mfccs[i]);
-            cout << "mfccs = " << mfccs[i] << endl;
+            //cout << "mfccs = " << mfccs[i] << endl;
         }
         sender.sendMessage(m);
     }
@@ -139,6 +164,19 @@ void ofApp::draw(){
     //float chromagramTop = 450;
     
     ofSetColor(255, 0, 0,255);
+    
+    string buf;
+    buf = "listening for osc messages on port" + ofToString(PORT);
+    ofDrawBitmapString(buf, 10, 20);
+    
+    // draw mouse state
+    buf = "mouse: " + ofToString(mouseX, 4) +  " " + ofToString(mouseY, 4);
+    ofDrawBitmapString(buf, 430, 20);
+    ofDrawBitmapString(mouseButtonState, 580, 20);
+    
+    for(int i = 0; i < NUM_MSG_STRINGS; i++){
+        ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
+    }
     
 //    //FFT magnitudes:
     float xinc = horizWidth / fftSize * 2.0;
