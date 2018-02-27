@@ -10,6 +10,7 @@
 #include "maxiMFCC.h"
 #define HOST "localhost"
 #define PORT 6448
+#define NUM_MSG_STRINGS 20
 
 class ofApp : public ofBaseApp{
     
@@ -39,6 +40,7 @@ public:
     int        initialBufferSize; /* buffer size */
     int        sampleRate;
     
+    int current_msg_string;
     
     //MAXIMILIAN STUFF:
     double wave,sample,outputs[2], ifftVal;
@@ -79,8 +81,13 @@ public:
     //ofTrueTypeFont myFont, myFont2;
     
     ofxOscSender sender;
+    ofxOscReceiver receiver;
     
     ofSoundStream audioStream;
+    
+    int current_msg_string;
+    string msg_strings[NUM_MSG_STRINGS];
+    float timers[NUM_MSG_STRINGS];
     
 };
 

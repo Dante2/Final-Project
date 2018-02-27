@@ -13,11 +13,14 @@ ofApp::~ofApp() {
 void ofApp::setup(){
     
     sender.setup(HOST, PORT);
+    receiver.setup(PORT);
     
     ofEnableAlphaBlending();
     ofSetupScreen();
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
+    
+    current_msg_string = 0;
     
     /* This is stuff you always need.*/
     
@@ -48,12 +51,14 @@ void ofApp::setup(){
     std::cout << mfccs << endl;
     
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
-    ofSoundStreamSetup(2,2, this, sampleRate, initialBufferSize, 4);/* Call this last ! */
+    
+    // is this necessary?
+    ofSoundStreamSetup(2, 2, this, sampleRate, initialBufferSize, 4);/* Call this last ! */
     
     //GUI STUFF
     gui.setup(); // most of the time you don't need a name
     gui.add(mfccToggle.setup("MFCCs (timbre/vocal) (13 inputs)", true));
-    gui.add(rmsToggle.setup("RMS (volume) (1 input)", true));
+    gui.add(rmsToggle.setup("RMS (volume) (13 input)", false));
     
     bHide = true;
     
@@ -81,6 +86,22 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    // receive messages
+    // hide old messages
+    for(int i = 0; i < NUM_MSG_STRINGS; i++){
+        if(timers[i] < ofGetElapsedTimef()){
+            msg_strings[i] = "";
+        }
+    }
+    
+    // check for waiting messages
+    while(receiver.hasWaitingMessages()){
+        // get the next message
+        ofxOscMessage m;
+        receiver.getNextMessage(m);
+    
+    
+    // sending messages
     ofxOscMessage m;
     m.setAddress("/wek/inputs");
     
@@ -155,13 +176,13 @@ void ofApp::draw(){
 
     if (mfccToggle) {
         numInputs += 13;
-        std::cout << "MFCC inputs = " << numInputs << endl;
+        //std::cout << "MFCC inputs = " << numInputs << endl;
     }
     
     // rms num inputs seems to be 1 + mfcc inputs. Why?
     if (rmsToggle) {
         numInputs++;
-        std::cout << "rms inputs = " << numInputs << endl;
+        //std::cout << "rms inputs = " << numInputs << endl;
     }
     
     char numInputsString[255]; // an array of chars
@@ -207,8 +228,7 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
-    
-    
+			
     /* You can just grab this input and stick it in a double, then use it above to create output*/
     
     float sum = 0;
