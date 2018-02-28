@@ -115,21 +115,16 @@ void ofApp::update(){
     // m.setAddress("/wek/inputs");
     
     while(receiver.hasWaitingMessages()){
-        // get the next message
-        //ofxOscMessage m;
         receiver.getNextMessage(&m);
-        ofLogNotice("Client just received a message");
-        // check the address of the incoming message
-        if(m.getAddress() == "/wek/outputs"){
+        if(m.getAddress() == "/output_1"){
+            messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
-            if(m.getNumArgs() > 0){
-                if(m.getArgType(0) == OFXOSC_TYPE_STRING){
-                    string oldMessages = messages;
-                    messages = m.getArgAsString(0) + "\n" + oldMessages;
-                    cout << "message = " << messages << endl;
-                }
-            }
-        }
+            cout << "message = " << messages << endl;
+        } else if (m.getAddress() == "/output_2"){
+            messages = m.getAddress();
+            // get the first argument (we're only sending one) as a string
+            cout << "message = " << messages << endl;
+    }
     }
     
     if (rmsToggle) {
