@@ -116,20 +116,20 @@ void ofApp::update(){
             // both the arguments are int32's
             mouseX = n.getArgAsInt32(0);
             mouseY = n.getArgAsInt32(1);
-
         }
-//
+    
 //    std::cout << "mouse x = " << mouseX << endl;
 //    std::cout << "mouse y = " << mouseY << endl;
-    
-    if(n.getAddress() == "/wek/outputs"){
-        // both the arguments are int32's
-//        mouseX = m.getArgAsInt32(0);
-//        mouseY = m.getArgAsInt32(1);
-        
+//
+    int j = 0;
+    if(n.getAddress() == "wek/outputs_1"){
+        j = 1;
+    } else {
+        j = 2;
     }
     
-    std::cout << "weki out = yay " << endl;
+    std::cout << "weki out = " << j << endl;
+    
         
         // add to the list of strings to display
 //        string msg_string;
