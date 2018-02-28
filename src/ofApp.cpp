@@ -1,5 +1,6 @@
 #include "ofApp.h"
-#include "maximilian.h"/* include the lib */
+/* include the lib */
+#include "maximilian.h"
 #include "time.h"
 
 //-------------------------------------------------------------
@@ -8,7 +9,6 @@
 ofApp::~ofApp() {
     
 }
-
 //--------------------------------------------------------------
 void ofApp::setup(){
     
@@ -20,24 +20,33 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     
-    current_msg_string = 0;
+    // 8current_msg_string = 0;
     
     /* This is stuff you always need.*/
     
-    sampleRate             = 44100; /* Sampling Rate */
-    initialBufferSize    = 512;    /* Buffer Size. you have to fill this buffer with sound*/
-    lAudioOut            = new float[initialBufferSize];/* outputs */
-    rAudioOut            = new float[initialBufferSize];
-    lAudioIn            = new float[initialBufferSize];/* inputs */
-    rAudioIn            = new float[initialBufferSize];
+    /* Sampling Rate */
+    sampleRate = 44100;
     
+    // Buffer Size
+    initialBufferSize = 512;
     
+    /* outputs */
+    lAudioOut = new float[initialBufferSize];
+    rAudioOut = new float[initialBufferSize];
+    
+    /* inputs */
+    lAudioIn = new float[initialBufferSize];
+    rAudioIn = new float[initialBufferSize];
+    
+    // memset?
     /* This is a nice safe piece of code */
     memset(lAudioOut, 0, initialBufferSize * sizeof(float));
     memset(rAudioOut, 0, initialBufferSize * sizeof(float));
     
     memset(lAudioIn, 0, initialBufferSize * sizeof(float));
     memset(rAudioIn, 0, initialBufferSize * sizeof(float));
+    
+    // ------- FFT ------- //
     
     fftSize = 1024;
     mfft.setup(fftSize, 512, 256);
@@ -46,21 +55,26 @@ void ofApp::setup(){
     nAverages = 12;
     oct.setup(sampleRate, fftSize/2, nAverages);
     
+    // ------ MFCC ------ //
+    
     mfccs = (double*) malloc(sizeof(double) * 13);
     mfcc.setup(512, 42, 13, 20, 20000, sampleRate);
     std::cout << mfccs << endl;
     
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
     
-    // is this necessary?
+    // ------ HEEELLLPPPPP ----- //
+    /* as far as I can tell this sets up Maxim whereas the 'audiostream one sets up the audio for soundcard. However both audiostream and of ofSoundStream both refer to the same thing so a bit confused */
     ofSoundStreamSetup(2, 2, this, sampleRate, initialBufferSize, 4);/* Call this last ! */
     
-    //GUI STUFF
+    // ------ GUI STUFF ------ //
     gui.setup(); // most of the time you don't need a name
     gui.add(mfccToggle.setup("MFCCs (timbre/vocal) (13 inputs)", true));
     gui.add(rmsToggle.setup("RMS (volume) (13 input)", false));
     
     bHide = true;
+    
+    // ------ audio stream ------ //
     
     /* currently the below sound stream inputs just one channel. Perhaps I need to set up the whole block of code for each channel? */
     
@@ -82,7 +96,7 @@ void ofApp::setup(){
     
     ofSetVerticalSync(true);
     
-    //Client side
+    // ----- OSC stuff ----- //
     
     destination = "localhost";
     
@@ -95,68 +109,46 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    
-    // ofxOscMessage m, n;
-    
-    // receive messages
 
-//    int j = 0;
-//    if(n.getAddress() == "wek/outputs_1"){
-//        j = 1;
-//    } else {
-//        j = 2;
-//    }
-//
-//    std::cout << "weki out = " << j << endl;
-//
-
-    // sending messages
-     ofxOscMessage m;
-    // m.setAddress("/wek/inputs");
+    // set up OSC
+    ofxOscMessage m;
     
-    while(receiver.hasWaitingMessages()){
+    // ----- send OSC -----
+    // if RMS threshold is reached send MFCCS to weki
+    if (rmsToggle) {
+        if (RMS > 0.2){
+            m.setAddress("/wek/inputs");
+            for (int i = 0; i < 13; i++) {
+                m.addFloatArg(mfccs[i]);
+            }
+            sender.sendMessage(m);
+            //cout << "m = " << m.getAddress() << endl;
+        }
+
+        // ----- receive OSC -----
         receiver.getNextMessage(&m);
+        
+        /* at the moment messages being received are hardcoded. The web idea is supposed to allow for more dynamic selection of class messages. A for loop iterating through a list of messages sent by wekinator. This most likely means better knowledge of the osc class within OF to que messages and work with lists of messages */
+        // get class 1 for activation
         if(m.getAddress() == "/output_1"){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
             cout << "message = " << messages << endl;
+        
+        // get class 2 for activation
         } else if (m.getAddress() == "/output_2"){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
             cout << "message = " << messages << endl;
     }
-    }
-    
-    if (rmsToggle) {
-        if (RMS > 0.2){
-        //ofxOscMessage m;
-        m.setAddress("/wek/inputs");
-        for (int i = 0; i < 13; i++) {
-            m.addFloatArg(mfccs[i]);
-        }
-    sender.sendMessage(m);
-    //cout << "m = " << m.getAddress() << endl;
-    }
 }
-    
-//    else if
-//        (mfccToggle) {
-//        // ofxOscMessage m;
-//        m.setAddress("/wek/inputs");
-//        for (int i = 0; i < 13; i++) {
-//            m.addFloatArg(mfccs[i]);
-//            //cout << "mfccs = " << mfccs[i] << endl;
-//        }
-//        sender.sendMessage(m);
-//    }
-//
-    // recieving messages
     
     // This is how to send message to weki to sart recording.
     // http://www.wekinator.org/detailed-instructions/#Customizing_DTW8217s_behavior
     // /wekinator/control/startDtwRecording
-    
-    
+    // this will be used for training the weki models with guitar, cajon and dance etc
+    // might be good for setting up the project's models to be trained on the fly
+
 }
 
 //--------------------------------------------------------------

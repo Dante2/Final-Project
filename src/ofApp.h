@@ -1,23 +1,24 @@
 #ifndef _TEST_APP
 #define _TEST_APP
-
-
 #include "ofMain.h"
 #include "ofxMaxim.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
-
 #include "maxiMFCC.h"
-#define HOST "localhost"
-//// send on port 6448
+
+// ------ this has now been set up in app.setup ------ //
+
+//#define HOST "localhost"
+//send on port 6448
 //#define PORT 6448
-//// listen on port 12000
+//listen on port 12000
 //#define PORT2 12000
 
 class ofApp : public ofBaseApp{
     
 public:
-    ~ofApp();/* deconsructor is very useful */
+    /* deconsructor is very useful */
+    ~ofApp();
     void setup();
     void update();
     void draw();
@@ -30,45 +31,55 @@ public:
     void mouseReleased(int x, int y, int button);
     void windowResized(int w, int h);
     
-    void audioRequested     (float * input, int bufferSize, int nChannels); /* output method */
-    void audioReceived     (float * input, int bufferSize, int nChannels); /* input method */
+    /* output method */
+    void audioRequested (float * input, int bufferSize, int nChannels);
+    /* input method */
+    void audioReceived (float * input, int bufferSize, int nChannels);
     
-    float     * lAudioOut; /* outputs */
-    float   * rAudioOut;
+    /* outputs */
+    float * lAudioOut;
+    float * rAudioOut;
     
-    float * lAudioIn; /* inputs */
+    /* inputs */
+    float * lAudioIn;
     float * rAudioIn;
     
-    int        initialBufferSize; /* buffer size */
-    int        sampleRate;
+    /* buffer size */
+    int initialBufferSize;
+    int sampleRate;
     
-    int current_msg_string;
+    // int current_msg_string;
     
     //MAXIMILIAN STUFF:
     double wave,sample,outputs[2], ifftVal;
-    maxiMix mymix;
-    maxiOsc osc;
+
+    // necessary????
+//    maxiMix mymix;
+//    maxiOsc osc;
     
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;
     float *ifftOutput;
     int ifftSize;
     
+    // data retrieval options
     float peakFreq = 0;
     float centroid = 0;
     float RMS = 0;
     
+    // FFT
     ofxMaxiIFFT ifft;
     ofxMaxiFFT mfft;
     int fftSize;
     int bins, dataSize;
     
+    // MFCC
     maxiMFCC mfcc;
     double *mfccs;
     
     maxiSample samp;
     
-    //GUI STUFF
+    // GUI STUFF
     bool bHide;
     
     ofxToggle mfccToggle;
@@ -81,27 +92,29 @@ public:
     ofxPanel gui;
     
     //ofTrueTypeFont myFont, myFont2;
-    
 
+    // soundstream
     ofSoundStream audioStream;
+
+    // ----- OSC ------ //
     
+    // ----- SEND ----- //
+    // ofxOscSender object
+    ofxOscSender sender;
+    // IP address we're sending to
+    string destination;
+    // port we're sending to
+    int sendPort;
+    // what we're going to send
+    string sent;
     
-//    string msg_strings[NUM_MSG_STRINGS];
-//    float timers[NUM_MSG_STRINGS];
-    
-    
-    
-    // Client side:
-    
-    ofxOscSender sender; // all-important ofxOscSender object
-    string destination; // IP address we're sending to
-    int sendPort; // port we're sending to
-    string sent; // what we're going to send: some stuff you typed
-    
-    ofxOscReceiver receiver; // OSC receiver
-    int recvPort; // port where we listen for messages
-    string messages; // string containing the received messages for display
-    
+    // ----- RECEIEVE ----- //
+    // OSC receiver
+    ofxOscReceiver receiver;
+    // port where we listen for messages
+    int recvPort;
+    // string containing the received messages for display
+    string messages;
 };
 
 #endif
