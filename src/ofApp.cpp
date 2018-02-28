@@ -12,8 +12,8 @@ ofApp::~ofApp() {
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-    sender.setup(HOST, PORT);
-    receiver.setup(PORT);
+//    sender.setup(HOST, PORT);
+//    receiver.setup(PORT);
     
     ofEnableAlphaBlending();
     ofSetupScreen();
@@ -81,76 +81,56 @@ void ofApp::setup(){
     std::cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
     
     ofSetVerticalSync(true);
+    
+    //Client side
+    
+    destination = "localhost";
+    
+    sendPort = 6448;
+    sender.setup(destination, sendPort);
+    
+    recvPort = 12000;
+    receiver.setup(recvPort);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     
-    ofxOscMessage m, n;
+    // ofxOscMessage m, n;
     
     // receive messages
-    
-    // hide old messages
-//    for(int i = 0; i < NUM_MSG_STRINGS; i++){
-//        if(timers[i] < ofGetElapsedTimef()){
-//            msg_strings[i] = "";
-//            //std::cout << msg_strings[i] << endl;
-//
-//            // std::cout << "NUM_MSG_STRINGS = " << NUM_MSG_STRINGS << endl;
-//        }
-//    }
-    
-    // check for waiting messages
-    //while(receiver.hasWaitingMessages()){
-        // get the next message
 
-        // ofxOscMessage n;
-        // n.setAddress("/wek/outputs");
-        //cout << "frm weki = " << n << endl;
-    
-//        receiver.getNextMessage(n);
-//        cout << "frm weki = " << receiver.getNextMessage(n) << endl;
-    
-        // check for mouse moved message
-        if(n.getAddress() == "/mouse/position"){
-            // both the arguments are int32's
-            mouseX = n.getArgAsInt32(0);
-            mouseY = n.getArgAsInt32(1);
-        }
-    
-//    std::cout << "mouse x = " << mouseX << endl;
-//    std::cout << "mouse y = " << mouseY << endl;
-//
-    int j = 0;
-    if(n.getAddress() == "wek/outputs_1"){
-        j = 1;
-    } else {
-        j = 2;
-    }
-    
-    std::cout << "weki out = " << j << endl;
-    
-        
-        // add to the list of strings to display
-//        string msg_string;
-//        msg_strings[current_msg_string] = msg_string;
-        //std::cout << "msg_strings = " << msg_string << endl;
-        
-//        timers[current_msg_string] = ofGetElapsedTimef() + 5.0f;
-//        std::cout << "timers = " << timers << endl;
-//
-//        current_msg_string = (current_msg_string + 1) % NUM_MSG_STRINGS;
-//        std::cout << "current_msg_string = " << current_msg_string << endl;
-        
-         //clear the next line
-//        msg_strings[current_msg_string] = "";
+//    int j = 0;
+//    if(n.getAddress() == "wek/outputs_1"){
+//        j = 1;
+//    } else {
+//        j = 2;
 //    }
-    
+//
+//    std::cout << "weki out = " << j << endl;
+//
 
-    
     // sending messages
-    // ofxOscMessage m;
+     ofxOscMessage m;
     // m.setAddress("/wek/inputs");
+    
+    while(receiver.hasWaitingMessages()){
+        // get the next message
+        //ofxOscMessage m;
+        receiver.getNextMessage(&m);
+        ofLogNotice("Client just received a message");
+        // check the address of the incoming message
+        if(m.getAddress() == "/wek/outputs"){
+            // get the first argument (we're only sending one) as a string
+            if(m.getNumArgs() > 0){
+                if(m.getArgType(0) == OFXOSC_TYPE_STRING){
+                    string oldMessages = messages;
+                    messages = m.getArgAsString(0) + "\n" + oldMessages;
+                    cout << "message = " << messages << endl;
+                }
+            }
+        }
+    }
     
     if (rmsToggle) {
         if (RMS > 0.2){
@@ -160,7 +140,7 @@ void ofApp::update(){
             m.addFloatArg(mfccs[i]);
         }
     sender.sendMessage(m);
-    cout << "m = " << m.getAddress() << endl;
+    //cout << "m = " << m.getAddress() << endl;
     }
 }
     
@@ -194,20 +174,6 @@ void ofApp::draw(){
     //float chromagramTop = 450;
     
     ofSetColor(255, 0, 0,255);
-    
-    string buf;
-    buf = "listening for osc messages on port" + ofToString(PORT);
-    ofDrawBitmapString(buf, 10, 20);
-    
-    // draw mouse state
-    buf = "mouse: " + ofToString(mouseX, 4) +  " " + ofToString(mouseY, 4);
-    ofDrawBitmapString(buf, 430, 20);
-    ofDrawBitmapString(mouseButtonState, 580, 20);
-    
-    for(int i = 0; i < NUM_MSG_STRINGS; i++){
-        ofDrawBitmapString(msg_strings[i], 10, 40 + 15 * i);
-        //std::cout << "msg string" << msg_strings[i] << endl;
-    }
     
 //    //FFT magnitudes:
     float xinc = horizWidth / fftSize * 2.0;

@@ -9,11 +9,10 @@
 
 #include "maxiMFCC.h"
 #define HOST "localhost"
-// send on port 6448
-#define PORT 6448
-// listen on port 12000
-#define PORT2 12000
-#define NUM_MSG_STRINGS 20
+//// send on port 6448
+//#define PORT 6448
+//// listen on port 12000
+//#define PORT2 12000
 
 class ofApp : public ofBaseApp{
     
@@ -95,13 +94,13 @@ public:
     // Client side:
     
     ofxOscSender sender; // all-important ofxOscSender object
-    string clientDestination; // IP address we're sending to
-    int clientSendPort; // port we're sending to
-    string clientTyping; // what we're going to send: some stuff you typed
+    string destination; // IP address we're sending to
+    int sendPort; // port we're sending to
+    string sent; // what we're going to send: some stuff you typed
     
     ofxOscReceiver receiver; // OSC receiver
-    int clientRecvPort; // port where we listen for messages
-    string clientMessages; // string containing the received messages for display
+    int recvPort; // port where we listen for messages
+    string messages; // string containing the received messages for display
     
 };
 
