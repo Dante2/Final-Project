@@ -113,48 +113,66 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-    
-    
-//    // set up OSC
-//    ofxOscMessage m;
-//    // m.setAddress("/wek/inputs");
-//
-//    // ----- send OSC -----
-//    // if RMS threshold is reached send MFCCS to weki
-//    if (rmsToggle) {
-//        if (RMS > 2){
-//            m.setAddress("/wekinator/control/startDtwRecording");
-//            // m.addFloatArg("mfccs");
-//            for (int i = 0; i < 13; i++) {
-//                m.addFloatArg(mfccs[i]);
-//            }
-//            sender.sendMessage(m);
-//            cout << "message out = " << m.getAddress() << endl;
-//        }
-
+    // currently using 'rms toggle' for switching on recording and the rms threshold for activating the recording mehanism in Weki. Perhaps I can then set the activation of the recording mode with accelrometer gesture (wave of the arm)? This would then switch it on in here or trigger activation of Weki's GUI to set it to record.
     
     ofxOscMessage m, n, o;
+    bool switchedOn = false;
     if (rmsToggle) {
+        //if (switchedOn == false){
         if (RMS > 0.5){
+            cout << "RMS On = " << RMS << endl;
+            switchedOn = true;
+            cout << "1. OSC Out switch = " << std::boolalpha << switchedOn << endl;
             n.setAddress("/wekinator/control/startDtwRecording 1");
             m.setAddress("mfccs");
-            // o.setAddress("/wekinator/control/stopDtwRecording 1");
             for (int i = 0; i < 13; i++) {
                 m.addFloatArg(mfccs[i]);
             }
-            
             senderActivation.sendMessage(n);
             sender.sendMessage(m);
-            // cout << "message out = " << m.getAddress() << endl;
-        } else {
-            // CurrentCount = myCounter.phasor(1, 1, 9);
-            // cout << "counting = " << CurrentCount << endl;
-            o.setAddress("/wekinator/control/stopDtwRecording 1");
-            // if (CurrentCount >= 3){
-            senderDeactivation.sendMessage(o);
+//          cout << "message out = " << m.getAddress() << endl;
+            
+            if (switchedOn == true){
+                //if (RMS < 2){
+                    cout << "RMS Off = " << RMS << endl;
+                    switchedOn = false;
+                    cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
+                    o.setAddress("/wekinator/control/stopDtwRecording 1");
+                    senderDeactivation.sendMessage(o);
+                    switchedOn = false;
+                }
+            //}
         }
     }
+    
+    // FAILED ATTEMPTS???
+    
+    // After many different attempted configurations of this if statement with a boolean for switching on and off I have ended up just sending both messages at the same time andf am applying a delay in the max patch (see max patch).
+        
+//        if (switchedOn == true){
+//            if (RMS < 2){
+//                cout << "RMS Off = " << RMS << endl;
+//                cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
+//                o.setAddress("/wekinator/control/stopDtwRecording 1");
+//                senderDeactivation.sendMessage(o);
+//                switchedOn = false;
+//            }
+        
+//        if (RMS < 2) {
+//            if (switchedOn == true){
+//            cout << "RMS Off = " << RMS << endl;
+//            cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
+//            o.setAddress("/wekinator/control/stopDtwRecording 1");
+//            senderDeactivation.sendMessage(o);
+//            switchedOn = false;
+//
+//        }
+//    }
+    
 
+
+    
+    
         // ----- receive OSC -----
         receiver.getNextMessage(&m);
         
@@ -295,6 +313,7 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         
     }
     RMS = sqrt(sum);
+    // cout << " Raw RMS = " << RMS << endl;
     
 }
 
