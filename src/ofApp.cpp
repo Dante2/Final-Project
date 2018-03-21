@@ -148,6 +148,8 @@ void ofApp::update(){
     // FAILED ATTEMPTS???
     
     // After many different attempted configurations of this if statement with a boolean for switching on and off I have ended up just sending both messages at the same time andf am applying a delay in the max patch (see max patch).
+    
+    // I tried nesting the if statements, I tried the else if statement. I just couldnt get it happening. the gate and switch approach in Max also proved unfruitful. In the end Occams razor and this hacky method proved to do the trick.
         
 //        if (switchedOn == true){
 //            if (RMS < 2){
