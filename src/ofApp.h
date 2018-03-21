@@ -55,7 +55,9 @@ public:
 
     // necessary????
 //    maxiMix mymix;
-//    maxiOsc osc;
+    maxiOsc osc, myCounter, mySwitchableOsc;
+    int CurrentCount;
+    double myOscOutput;
     
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;
@@ -100,11 +102,17 @@ public:
     
     // ----- SEND ----- //
     // ofxOscSender object
-    ofxOscSender sender;
+    ofxOscSender sender, senderActivation, senderDeactivation;
+    
+    
     // IP address we're sending to
     string destination;
     // port we're sending to
     int sendPort;
+    
+    int sendPortActivate;
+    
+    int sendPortDeactivate;
     // what we're going to send
     string sent;
     

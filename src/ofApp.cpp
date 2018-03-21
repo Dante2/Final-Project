@@ -11,10 +11,7 @@ ofApp::~ofApp() {
 }
 //--------------------------------------------------------------
 void ofApp::setup(){
-    
-//    sender.setup(HOST, PORT);
-//    receiver.setup(PORT);
-    
+
     ofEnableAlphaBlending();
     ofSetupScreen();
     ofBackground(0, 0, 0);
@@ -100,8 +97,14 @@ void ofApp::setup(){
     
     destination = "localhost";
     
-    sendPort = 6448;
+    //sendPort = 6448;
+    sendPort = 6450;
+    sendPortActivate = 6452;
+    sendPortDeactivate = 6453;
+    
     sender.setup(destination, sendPort);
+    senderActivation.setup(destination, sendPortActivate);
+    senderDeactivation.setup(destination, sendPortDeactivate);
     
     recvPort = 12000;
     receiver.setup(recvPort);
@@ -110,20 +113,47 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
 
-    // set up OSC
-    ofxOscMessage m;
     
-    // ----- send OSC -----
-    // if RMS threshold is reached send MFCCS to weki
+    
+//    // set up OSC
+//    ofxOscMessage m;
+//    // m.setAddress("/wek/inputs");
+//
+//    // ----- send OSC -----
+//    // if RMS threshold is reached send MFCCS to weki
+//    if (rmsToggle) {
+//        if (RMS > 2){
+//            m.setAddress("/wekinator/control/startDtwRecording");
+//            // m.addFloatArg("mfccs");
+//            for (int i = 0; i < 13; i++) {
+//                m.addFloatArg(mfccs[i]);
+//            }
+//            sender.sendMessage(m);
+//            cout << "message out = " << m.getAddress() << endl;
+//        }
+
+    
+    ofxOscMessage m, n, o;
     if (rmsToggle) {
-        if (RMS > 0.2){
-            m.setAddress("/wek/inputs");
+        if (RMS > 0.5){
+            n.setAddress("/wekinator/control/startDtwRecording 1");
+            m.setAddress("mfccs");
+            // o.setAddress("/wekinator/control/stopDtwRecording 1");
             for (int i = 0; i < 13; i++) {
                 m.addFloatArg(mfccs[i]);
             }
+            
+            senderActivation.sendMessage(n);
             sender.sendMessage(m);
-            //cout << "m = " << m.getAddress() << endl;
+            // cout << "message out = " << m.getAddress() << endl;
+        } else {
+            // CurrentCount = myCounter.phasor(1, 1, 9);
+            // cout << "counting = " << CurrentCount << endl;
+            o.setAddress("/wekinator/control/stopDtwRecording 1");
+            // if (CurrentCount >= 3){
+            senderDeactivation.sendMessage(o);
         }
+    }
 
         // ----- receive OSC -----
         receiver.getNextMessage(&m);
@@ -141,7 +171,7 @@ void ofApp::update(){
             // get the first argument (we're only sending one) as a string
             cout << "message = " << messages << endl;
     }
-}
+
     
     // This is how to send message to weki to sart recording.
     // http://www.wekinator.org/detailed-instructions/#Customizing_DTW8217s_behavior
@@ -174,7 +204,7 @@ void ofApp::draw(){
     //MFCCs:
     ofSetColor(0, 255, 0,200);
     xinc = horizWidth / 13;
-    for(int i=0; i < 13; i++) {
+    for(int i = 0; i < 13; i++) {
         float height = mfccs[i] * 100.0;
         ofRect(horizOffset + (i*xinc),mfccTop - height,40, height);
         //        cout << mfccs[i] << ",";
@@ -270,11 +300,32 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    
+//
+//    ofxOscMessage m, n, o;
+//
+//    if (key == 'a'){
+//        n.setAddress("/wekinator/control/startDtwRecording 1");
+//        m.setAddress("mfccs");
+//        // o.setAddress("/wekinator/control/stopDtwRecording 1");
+//        for (int i = 0; i < 13; i++) {
+//            m.addFloatArg(mfccs[i]);
+//        }
+//
+//        senderActivation.sendMessage(n);
+//        sender.sendMessage(m);
+//        cout << "message out = " << m.getAddress() << endl;
+//    } else {
+//
+//
+//
+//        }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
+//    ofxOscMessage o;
+//    o.setAddress("/wekinator/control/stopDtwRecording 1");
+//    senderDeactivation.sendMessage(o);
     
 }
 
