@@ -32,9 +32,11 @@ public:
     void windowResized(int w, int h);
     
     /* output method */
-    void audioRequested (float * input, int bufferSize, int nChannels);
+    void audioRequested (float * output, int bufferSize, int nChannels);
     /* input method */
     void audioReceived (float * input, int bufferSize, int nChannels);
+    
+    void audioOut(float * output, int bufferSize, int nChannels);
     
     /* outputs */
     float * lAudioOut;
@@ -58,6 +60,9 @@ public:
     maxiOsc osc, myCounter, mySwitchableOsc;
     int CurrentCount;
     double myOscOutput;
+    
+    maxiOsc mySine1;
+    double spitOut;
     
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;

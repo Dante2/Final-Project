@@ -81,15 +81,21 @@ void ofApp::setup(){
     // set which device to use with id frm listDevices
     audioStream.setDeviceID(0);
     
+//    cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
+//    cout << "no of output channels = " << audioStream.getNumOutputChannels() << endl;
+    
     // what exactly is "this" reffering to here?
     audioStream.setInput(this);
     
     // why has adding "this" to this line resulted in functionality?
     audioStream.setup(this, 0, 1, sampleRate, initialBufferSize, 4);
     
+    cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
+    cout << "no of output channels = " << audioStream.getNumOutputChannels() << endl;
+    
     // this is outputting no of channels as defined in stream setup
     audioStream.getNumInputChannels();
-    std::cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
+    // std::cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
     
     ofSetVerticalSync(true);
     
@@ -118,26 +124,30 @@ void ofApp::update(){
     ofxOscMessage m, n, o;
     bool switchedOn = false;
     if (rmsToggle) {
+        m.setAddress("mfccs");
+        for (int i = 0; i < 13; i++) {
+            m.addFloatArg(mfccs[i]);
+        }
+        sender.sendMessage(m);
+        
+        // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         //if (switchedOn == false){
-        if (RMS > 0.5){
-            cout << "RMS On = " << RMS << endl;
+        if (RMS > 3){
+            //cout << "RMS On = " << RMS << endl;
             switchedOn = true;
-            cout << "1. OSC Out switch = " << std::boolalpha << switchedOn << endl;
-            n.setAddress("/wekinator/control/startDtwRecording 1");
-            m.setAddress("mfccs");
-            for (int i = 0; i < 13; i++) {
-                m.addFloatArg(mfccs[i]);
-            }
+            //cout << "1. OSC Out switch = " << std::boolalpha << switchedOn << endl;
+            n.setAddress("/wekinator/control/startDtwRecording");
+           
             senderActivation.sendMessage(n);
-            sender.sendMessage(m);
+            
 //          cout << "message out = " << m.getAddress() << endl;
             
             if (switchedOn == true){
                 //if (RMS < 2){
-                    cout << "RMS Off = " << RMS << endl;
+                    //cout << "RMS Off = " << RMS << endl;
                     switchedOn = false;
-                    cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
-                    o.setAddress("/wekinator/control/stopDtwRecording 1");
+                    //cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
+                    o.setAddress("/wekinator/control/stopDtwRecording");
                     senderDeactivation.sendMessage(o);
                     switchedOn = false;
                 }
@@ -292,13 +302,35 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
             mfcc.mfcc(mfft.magnitudes, mfccs);
         }
         
-        lAudioOut[i] = 0;
-        rAudioOut[i] = 0;
+         float ampOut = 0.5;
+        
+         spitOut = mySine1.sinewave(500);
+        
+         lAudioOut[i * nChannels] = spitOut * ampOut;
+         rAudioOut[i * nChannels + 1] = spitOut * ampOut;
+        
+        std::cout << "spitOut = " << spitOut << endl;
         
     }
 }
 
 //--------------------------------------------------------------
+void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
+    
+    // float ampOut = 0.5;
+    
+    // spitOut = mySine1.sinewave(500);
+    for (int i = 0; i < bufferSize; i++){
+
+//        output[i*nChannels    ] = spitOut * ampOut; /* You may end up with lots of outputs. add them here */
+//        output[i*nChannels + 1] = spitOut * ampOut;
+        
+    }
+    
+}
+
+//----------------------------------------------------------------------------
+
 void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 			
     /* You can just grab this input and stick it in a double, then use it above to create output*/
@@ -312,6 +344,9 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         rAudioIn[i] = input[i*2+1];
         
         sum += input[i*2] * input[i*2];
+        spitOut = sum;
+        
+        
         
     }
     RMS = sqrt(sum);
