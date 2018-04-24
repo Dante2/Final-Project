@@ -43,6 +43,12 @@ void ofApp::setup(){
     memset(lAudioIn, 0, initialBufferSize * sizeof(float));
     memset(rAudioIn, 0, initialBufferSize * sizeof(float));
     
+    // ------- RECORDER ------- //
+    // Here we define a double floating value that will contain our
+    // frame of lovely maximilian generated audio
+    recorder.setup("/Users/jools/Desktop/Mess_Around/monkeyLover.wav");
+    recorder.startRecording();
+    
     // ------- FFT ------- //
     
     fftSize = 1024;
@@ -181,9 +187,6 @@ void ofApp::update(){
 //        }
 //    }
     
-
-
-    
     
         // ----- receive OSC -----
         receiver.getNextMessage(&m);
@@ -193,12 +196,18 @@ void ofApp::update(){
         if(m.getAddress() == "/output_1"){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
+            
+            recorder.startRecording();
+            
             cout << "message = " << messages << endl;
         
         // get class 2 for activation
         } else if (m.getAddress() == "/output_2"){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
+            
+            recorder.stopRecording();
+            
             cout << "message = " << messages << endl;
     }
 
@@ -283,6 +292,28 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
         //std::cout << "audio = " << wave << endl;
         if (mfft.process(wave)) {
             
+            //            int bins   = fftSize / 2.0;
+            //do some manipulation
+            //            int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+            //highpass
+            //            memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
+            //            memset(mfft.phases, 0, sizeof(float) * hpCutoff);
+            //lowpass
+            //            memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+            //            memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+            
+            //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
+            
+            /* for (int j = 0; j < 12; j++) {
+             chromagram[j] = 0;
+             }
+             int j = 0;
+             for (int i = 0; i < oct.nAverages; i++) {
+             chromagram[j] += oct.averages[i];
+             j++;
+             j = j % 12;
+             } */
+            
             mfft.magsToDB();
             oct.calculate(mfft.magnitudesDB);
             
@@ -299,15 +330,17 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
             }
             centroid = sum / (fftSize / 2);
             peakFreq = (float)maxBin/fftSize * 44100;
+            
             mfcc.mfcc(mfft.magnitudes, mfccs);
+             //cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
         }
-        
-         float ampOut = 0.5;
-        
-         spitOut = mySine1.sinewave(500);
-        
-         lAudioOut[i * nChannels] = spitOut * ampOut;
-         rAudioOut[i * nChannels + 1] = spitOut * ampOut;
+
+//         float ampOut = 3;
+//
+//         spitOut = mySine1.sinewave(500);
+//
+//        lAudioOut[i] = ampOut * spitOut;
+//        rAudioOut[i] = ampOut * spitOut;
         
         std::cout << "spitOut = " << spitOut << endl;
         
@@ -317,14 +350,18 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
-    // float ampOut = 0.5;
+    // using this audio output method seems to deactivate the mfcc GUI but is currently giving me very distorted sound //
     
-    // spitOut = mySine1.sinewave(500);
+     float ampOut = 1;
+
+     // spitOut = mySine1.sinewave(500);
     for (int i = 0; i < bufferSize; i++){
 
-//        output[i*nChannels    ] = spitOut * ampOut; /* You may end up with lots of outputs. add them here */
-//        output[i*nChannels + 1] = spitOut * ampOut;
+        output[i*nChannels    ] = spitOut * ampOut; /* You may end up with lots of outputs. add them here */
+        output[i*nChannels + 1] = spitOut * ampOut;
         
+        recorder.passData(output, maxiSettings::channels);
+
     }
     
 }
@@ -345,6 +382,7 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         
         sum += input[i*2] * input[i*2];
         spitOut = sum;
+
         
         
         

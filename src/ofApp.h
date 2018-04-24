@@ -50,6 +50,10 @@ public:
     int initialBufferSize;
     int sampleRate;
     
+    /* recorder */
+    maxiRecorder recorder;
+    double recorded;
+    
     // int current_msg_string;
     
     //MAXIMILIAN STUFF:
