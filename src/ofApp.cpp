@@ -287,78 +287,127 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
-    for (int i = 0; i < bufferSize; i++){
-        wave = lAudioIn[i];
-        //std::cout << "audio = " << wave << endl;
-        if (mfft.process(wave)) {
-            
-            //            int bins   = fftSize / 2.0;
-            //do some manipulation
-            //            int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
-            //highpass
-            //            memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
-            //            memset(mfft.phases, 0, sizeof(float) * hpCutoff);
-            //lowpass
-            //            memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-            //            memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-            
-            //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
-            
-            /* for (int j = 0; j < 12; j++) {
-             chromagram[j] = 0;
-             }
-             int j = 0;
-             for (int i = 0; i < oct.nAverages; i++) {
-             chromagram[j] += oct.averages[i];
-             j++;
-             j = j % 12;
-             } */
-            
-            mfft.magsToDB();
-            oct.calculate(mfft.magnitudesDB);
-            
-            float sum = 0;
-            float maxFreq = 0;
-            int maxBin = 0;
-            
-            for (int i = 0; i < fftSize/2; i++) {
-                sum += mfft.magnitudes[i];
-                if (mfft.magnitudes[i] > maxFreq) {
-                    maxFreq=mfft.magnitudes[i];
-                    maxBin = i;
-                }
-            }
-            centroid = sum / (fftSize / 2);
-            peakFreq = (float)maxBin/fftSize * 44100;
-            
-            mfcc.mfcc(mfft.magnitudes, mfccs);
-             //cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
-        }
-
-//         float ampOut = 3;
+//    for (int i = 0; i < bufferSize; i++){
+//        wave = lAudioIn[i];
+//        //std::cout << "audio = " << wave << endl;
+//        if (mfft.process(wave)) {
 //
-//         spitOut = mySine1.sinewave(500);
+//                        int bins   = fftSize / 2.0;
+//            //do some manipulation
+//                        int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+//            //highpass
+////                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
+////                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
+//            //lowpass
+//                        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+//                        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
 //
-//        lAudioOut[i] = ampOut * spitOut;
-//        rAudioOut[i] = ampOut * spitOut;
-        
-        std::cout << "spitOut = " << spitOut << endl;
-        
-    }
+//            //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
+//
+//            /* for (int j = 0; j < 12; j++) {
+//             chromagram[j] = 0;
+//             }
+//             int j = 0;
+//             for (int i = 0; i < oct.nAverages; i++) {
+//             chromagram[j] += oct.averages[i];
+//             j++;
+//             j = j % 12;
+//             } */
+//
+//            mfft.magsToDB();
+//            oct.calculate(mfft.magnitudesDB);
+//
+//            float sum = 0;
+//            float maxFreq = 0;
+//            int maxBin = 0;
+//
+//            for (int i = 0; i < fftSize/2; i++) {
+//                sum += mfft.magnitudes[i];
+//                if (mfft.magnitudes[i] > maxFreq) {
+//                    maxFreq=mfft.magnitudes[i];
+//                    maxBin = i;
+//                }
+//            }
+//            centroid = sum / (fftSize / 2);
+//            peakFreq = (float)maxBin/fftSize * 44100;
+//
+//            mfcc.mfcc(mfft.magnitudes, mfccs);
+//            cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
+//        }
+//
+////         float ampOut = 3;
+////
+////         spitOut = mySine1.sinewave(500);
+////
+//        lAudioOut[i] = 0;
+//        rAudioOut[i] = 0;
+//
+////        std::cout << "spitOut = " << spitOut << endl;
+//
+//    }
 }
 
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     
     // using this audio output method seems to deactivate the mfcc GUI but is currently giving me very distorted sound //
+    for (int i = 0; i < bufferSize; i++){
+    wave = lAudioIn[i];
+    //std::cout << "audio = " << wave << endl;
+    if (mfft.process(wave)) {
+        
+        int bins   = fftSize / 2.0;
+        //do some manipulation
+        int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+        //highpass
+        //                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
+        //                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
+        //lowpass
+        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+        
+        //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
+        
+        /* for (int j = 0; j < 12; j++) {
+         chromagram[j] = 0;
+         }
+         int j = 0;
+         for (int i = 0; i < oct.nAverages; i++) {
+         chromagram[j] += oct.averages[i];
+         j++;
+         j = j % 12;
+         } */
+        
+        mfft.magsToDB();
+        oct.calculate(mfft.magnitudesDB);
+        
+        float sum = 0;
+        float maxFreq = 0;
+        int maxBin = 0;
+        
+        for (int i = 0; i < fftSize/2; i++) {
+            sum += mfft.magnitudes[i];
+            if (mfft.magnitudes[i] > maxFreq) {
+                maxFreq=mfft.magnitudes[i];
+                maxBin = i;
+            }
+        }
+        centroid = sum / (fftSize / 2);
+        peakFreq = (float)maxBin/fftSize * 44100;
+        
+        mfcc.mfcc(mfft.magnitudes, mfccs);
+        cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
+    }
     
      float ampOut = 1;
 
      // spitOut = mySine1.sinewave(500);
-    for (int i = 0; i < bufferSize; i++){
+    // for (int i = 0; i < bufferSize; i++){
 
         output[i*nChannels    ] = spitOut * ampOut; /* You may end up with lots of outputs. add them here */
         output[i*nChannels + 1] = spitOut * ampOut;
+        
+        std::cout << "spitOut = " << spitOut << endl;
         
         recorder.passData(output, maxiSettings::channels);
 
@@ -383,9 +432,6 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         sum += input[i*2] * input[i*2];
         spitOut = sum;
 
-        
-        
-        
     }
     RMS = sqrt(sum);
     // cout << " Raw RMS = " << RMS << endl;
