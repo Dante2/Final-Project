@@ -129,6 +129,8 @@ void ofApp::update(){
 
     // currently using 'rms toggle' for switching on recording and the rms threshold for activating the recording mehanism in Weki. Perhaps I can then set the activation of the recording mode with accelrometer gesture (wave of the arm)? This would then switch it on in here or trigger activation of Weki's GUI to set it to record.
     
+    // ----- send OSC ----- //
+    
     ofxOscMessage m, n, o;
     bool switchedOn = false;
     if (rmsToggle) {
@@ -139,19 +141,16 @@ void ofApp::update(){
         sender.sendMessage(m);
         
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
-        //if (switchedOn == false){
+        
         if (RMS > 3){
             //cout << "RMS On = " << RMS << endl;
             switchedOn = true;
             //cout << "1. OSC Out switch = " << std::boolalpha << switchedOn << endl;
             n.setAddress("/wekinator/control/startDtwRecording");
-           
             senderActivation.sendMessage(n);
-            
-//          cout << "message out = " << m.getAddress() << endl;
+            // cout << "message out = " << m.getAddress() << endl;
             
             if (switchedOn == true){
-                //if (RMS < 2){
                     //cout << "RMS Off = " << RMS << endl;
                     switchedOn = false;
                     //cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
@@ -159,41 +158,14 @@ void ofApp::update(){
                     senderDeactivation.sendMessage(o);
                     switchedOn = false;
                 }
-            //}
+            }
         }
-    }
     
-    // FAILED ATTEMPTS???
-    
-    // After many different attempted configurations of this if statement with a boolean for switching on and off I have ended up just sending both messages at the same time andf am applying a delay in the max patch (see max patch).
-    
-    // I tried nesting the if statements, I tried the else if statement. I just couldnt get it happening. the gate and switch approach in Max also proved unfruitful. In the end Occams razor and this hacky method proved to do the trick.
-        
-//        if (switchedOn == true){
-//            if (RMS < 2){
-//                cout << "RMS Off = " << RMS << endl;
-//                cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
-//                o.setAddress("/wekinator/control/stopDtwRecording 1");
-//                senderDeactivation.sendMessage(o);
-//                switchedOn = false;
-//            }
-        
-//        if (RMS < 2) {
-//            if (switchedOn == true){
-//            cout << "RMS Off = " << RMS << endl;
-//            cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
-//            o.setAddress("/wekinator/control/stopDtwRecording 1");
-//            senderDeactivation.sendMessage(o);
-//            switchedOn = false;
-//
-//        }
-//    }
-    
-    
-        // ----- receive OSC -----
+        // ----- receive OSC ----- //
         receiver.getNextMessage(&m);
         
         /* at the moment messages being received are hardcoded. The web idea is supposed to allow for more dynamic selection of class messages. A for loop iterating through a list of messages sent by wekinator. This most likely means better knowledge of the osc class within OF to que messages and work with lists of messages */
+    
         // get class 1 for activation
         if(m.getAddress() == "/output_1"){
             messages = m.getAddress();
@@ -213,12 +185,8 @@ void ofApp::update(){
             cout << "message = " << messages << endl;
     }
 
-    
     // This is how to send message to weki to sart recording.
     // http://www.wekinator.org/detailed-instructions/#Customizing_DTW8217s_behavior
-    // /wekinator/control/startDtwRecording
-    // this will be used for training the weki models with guitar, cajon and dance etc
-    // might be good for setting up the project's models to be trained on the fly
 
 }
 
@@ -233,7 +201,7 @@ void ofApp::draw(){
     
     ofSetColor(255, 0, 0,255);
     
-//    //FFT magnitudes:
+    //FFT magnitudes:
     float xinc = horizWidth / fftSize * 2.0;
 //    for(int i=0; i < fftSize / 2; i++) {
 //        float height = mfft.magnitudes[i] * 100;
@@ -272,7 +240,6 @@ void ofApp::draw(){
         //std::cout << "MFCC inputs = " << numInputs << endl;
     }
     
-    // rms num inputs seems to be 1 + mfcc inputs. Why?
     if (rmsToggle) {
         numInputs++;
         //std::cout << "rms inputs = " << numInputs << endl;
@@ -289,64 +256,7 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
-//    for (int i = 0; i < bufferSize; i++){
-//        wave = lAudioIn[i];
-//        //std::cout << "audio = " << wave << endl;
-//        if (mfft.process(wave)) {
-//
-//                        int bins   = fftSize / 2.0;
-//            //do some manipulation
-//                        int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
-//            //highpass
-////                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
-////                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
-//            //lowpass
-//                        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-//                        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-//
-//            //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
-//
-//            /* for (int j = 0; j < 12; j++) {
-//             chromagram[j] = 0;
-//             }
-//             int j = 0;
-//             for (int i = 0; i < oct.nAverages; i++) {
-//             chromagram[j] += oct.averages[i];
-//             j++;
-//             j = j % 12;
-//             } */
-//
-//            mfft.magsToDB();
-//            oct.calculate(mfft.magnitudesDB);
-//
-//            float sum = 0;
-//            float maxFreq = 0;
-//            int maxBin = 0;
-//
-//            for (int i = 0; i < fftSize/2; i++) {
-//                sum += mfft.magnitudes[i];
-//                if (mfft.magnitudes[i] > maxFreq) {
-//                    maxFreq=mfft.magnitudes[i];
-//                    maxBin = i;
-//                }
-//            }
-//            centroid = sum / (fftSize / 2);
-//            peakFreq = (float)maxBin/fftSize * 44100;
-//
-//            mfcc.mfcc(mfft.magnitudes, mfccs);
-//            cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
-//        }
-//
-//         float ampOut = 0.5;
-////
-////         spitOut = mySine1.sinewave(500);
-////
-//        lAudioOut[i] = spitOut * ampOut;
-//        rAudioOut[i] = spitOut * ampOut;
-//
-//        std::cout << "l audio = " << lAudioOut[i] << endl;
-//        std::cout << "r audio = " << rAudioOut[i] << endl;
-//    }
+
 }
 
 //--------------------------------------------------------------
@@ -401,46 +311,34 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
     }
 
-     float ampOut = 0.4;
+        float ampOut = 1;
 
-     // spitOut = mySine1.sinewave(500);
-        
-        vector<float> spitOut(initialBufferSize);
-
-        output[i*nChannels    ] = myFace.dl(whatever[i],13000,0.7); /* You may end up with lots of outputs. add them here */
-        output[i*nChannels + 1] = whatever[i];
-
-//          cout << "spitOut = " << spitOut[i] << endl;
-//          cout << "output = " << output[i] << endl;
-
-
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut; /* You may end up with lots of outputs. add them here */
+        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
     }
-    recorder.passData(output,1024);
 
+    // Switch recording on and off
+    if (recordMode == true){
+        recorder.passData(output, 1024);
+    } else {
+        recordMode == false;
+    }
 }
 
 //----------------------------------------------------------------------------
 
 void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
-			
-    /* You can just grab this input and stick it in a double, then use it above to create output*/
     
     float sum = 0;
     for (int i = 0; i < bufferSize; i++){
         
-        /* you can also grab the data out of the arrays*/
-        
-        vector<float> spitOut(initialBufferSize);
-        
         lAudioIn[i] = input[i*2];
         rAudioIn[i] = input[i*2+1];
         
-        whatever[i] = input[i*2];
+        // our array for jacking in our audio input stream
+        inOut[i] = input[i*2];
         
-        // cout << "input = " << input[i] << endl;
-        // cout << "spitOut = " << spitOut[i] << endl;
-        
-        
+        // sum is done for our stereo output
         sum += input[i*2] * input[i*2];
 
     }
@@ -451,39 +349,17 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-//
-//    ofxOscMessage m, n, o;
-//
-//    if (key == 'a'){
-//        n.setAddress("/wekinator/control/startDtwRecording 1");
-//        m.setAddress("mfccs");
-//        // o.setAddress("/wekinator/control/stopDtwRecording 1");
-//        for (int i = 0; i < 13; i++) {
-//            m.addFloatArg(mfccs[i]);
-//        }
-//
-//        senderActivation.sendMessage(n);
-//        sender.sendMessage(m);
-//        cout << "message out = " << m.getAddress() << endl;
-//    } else {
-//
-//
-//
-//        }
     
     if (key == 'a'){
-         recorder.startRecording();
-    
+        recorder.startRecording();
+            recordMode = true;
     }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-//    ofxOscMessage o;
-//    o.setAddress("/wekinator/control/stopDtwRecording 1");
-//    senderDeactivation.sendMessage(o);
     
-    recorder.stopRecording();
     recorder.saveToWav();
     
 }

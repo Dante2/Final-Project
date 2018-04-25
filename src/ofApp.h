@@ -42,11 +42,10 @@ public:
     float * lAudioOut;
     float * rAudioOut;
     
-    // should this be a pointer?
-    vector<float> * spitOut;
+    double inOut[512];
     
-    double whatever[512];
-    
+    //------ EFFECTS RACK ------//
+    // delay ----
     maxiDelayline myFace;
     
     // float * output;
@@ -62,6 +61,7 @@ public:
     /* recorder */
     maxiRecorder recorder;
     double recorded;
+    bool recordMode;
     
     // int current_msg_string;
     
