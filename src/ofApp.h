@@ -42,6 +42,15 @@ public:
     float * lAudioOut;
     float * rAudioOut;
     
+    // should this be a pointer?
+    vector<float> * spitOut;
+    
+    double whatever[512];
+    
+    maxiDelayline myFace;
+    
+    // float * output;
+    
     /* inputs */
     float * lAudioIn;
     float * rAudioIn;
@@ -66,7 +75,6 @@ public:
     double myOscOutput;
     
     maxiOsc mySine1;
-    double spitOut;
     
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;

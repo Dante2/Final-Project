@@ -31,6 +31,8 @@ void ofApp::setup(){
     lAudioOut = new float[initialBufferSize];
     rAudioOut = new float[initialBufferSize];
     
+    vector<float> spitOut (initialBufferSize);
+    
     /* inputs */
     lAudioIn = new float[initialBufferSize];
     rAudioIn = new float[initialBufferSize];
@@ -197,7 +199,7 @@ void ofApp::update(){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
             
-            recorder.startRecording();
+            // recorder.startRecording();
             
             cout << "message = " << messages << endl;
         
@@ -206,7 +208,7 @@ void ofApp::update(){
             messages = m.getAddress();
             // get the first argument (we're only sending one) as a string
             
-            recorder.stopRecording();
+            // recorder.stopRecording();
             
             cout << "message = " << messages << endl;
     }
@@ -260,7 +262,7 @@ void ofApp::draw(){
 //    //myFont.drawString(centroidString, 12, chromagramTop + 80);
     
     char rmsString[255]; // an array of chars
-    sprintf(rmsString, "RMS: %.2f", RMS);
+   // sprintf(rmsString, "RMS: %.2f", RMS);
     //myFont.drawString(rmsString, 12, chromagramTop + 110);
     
     int numInputs = 0;
@@ -335,27 +337,27 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
 //            cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
 //        }
 //
-////         float ampOut = 3;
+//         float ampOut = 0.5;
 ////
 ////         spitOut = mySine1.sinewave(500);
 ////
-//        lAudioOut[i] = 0;
-//        rAudioOut[i] = 0;
+//        lAudioOut[i] = spitOut * ampOut;
+//        rAudioOut[i] = spitOut * ampOut;
 //
-////        std::cout << "spitOut = " << spitOut << endl;
-//
+//        std::cout << "l audio = " << lAudioOut[i] << endl;
+//        std::cout << "r audio = " << rAudioOut[i] << endl;
 //    }
 }
 
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
-    
+
     // using this audio output method seems to deactivate the mfcc GUI but is currently giving me very distorted sound //
     for (int i = 0; i < bufferSize; i++){
     wave = lAudioIn[i];
     //std::cout << "audio = " << wave << endl;
     if (mfft.process(wave)) {
-        
+
         int bins   = fftSize / 2.0;
         //do some manipulation
         int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
@@ -363,11 +365,11 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
         //                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
         //lowpass
-        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-        
+//        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+//        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+
         //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
-        
+
         /* for (int j = 0; j < 12; j++) {
          chromagram[j] = 0;
          }
@@ -377,14 +379,14 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
          j++;
          j = j % 12;
          } */
-        
+
         mfft.magsToDB();
         oct.calculate(mfft.magnitudesDB);
-        
+
         float sum = 0;
         float maxFreq = 0;
         int maxBin = 0;
-        
+
         for (int i = 0; i < fftSize/2; i++) {
             sum += mfft.magnitudes[i];
             if (mfft.magnitudes[i] > maxFreq) {
@@ -394,25 +396,27 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         }
         centroid = sum / (fftSize / 2);
         peakFreq = (float)maxBin/fftSize * 44100;
-        
+
         mfcc.mfcc(mfft.magnitudes, mfccs);
-        cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
+        // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
     }
-    
-     float ampOut = 1;
+
+     float ampOut = 0.4;
 
      // spitOut = mySine1.sinewave(500);
-    // for (int i = 0; i < bufferSize; i++){
+        
+        vector<float> spitOut(initialBufferSize);
 
-        output[i*nChannels    ] = spitOut * ampOut; /* You may end up with lots of outputs. add them here */
-        output[i*nChannels + 1] = spitOut * ampOut;
-        
-        std::cout << "spitOut = " << spitOut << endl;
-        
-        recorder.passData(output, maxiSettings::channels);
+        output[i*nChannels    ] = myFace.dl(whatever[i],13000,0.7); /* You may end up with lots of outputs. add them here */
+        output[i*nChannels + 1] = whatever[i];
+
+//          cout << "spitOut = " << spitOut[i] << endl;
+//          cout << "output = " << output[i] << endl;
+
 
     }
-    
+    recorder.passData(output,1024);
+
 }
 
 //----------------------------------------------------------------------------
@@ -426,11 +430,18 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         
         /* you can also grab the data out of the arrays*/
         
+        vector<float> spitOut(initialBufferSize);
+        
         lAudioIn[i] = input[i*2];
         rAudioIn[i] = input[i*2+1];
         
+        whatever[i] = input[i*2];
+        
+        // cout << "input = " << input[i] << endl;
+        // cout << "spitOut = " << spitOut[i] << endl;
+        
+        
         sum += input[i*2] * input[i*2];
-        spitOut = sum;
 
     }
     RMS = sqrt(sum);
@@ -459,6 +470,11 @@ void ofApp::keyPressed(int key){
 //
 //
 //        }
+    
+    if (key == 'a'){
+         recorder.startRecording();
+    
+    }
 }
 
 //--------------------------------------------------------------
@@ -466,6 +482,9 @@ void ofApp::keyReleased(int key){
 //    ofxOscMessage o;
 //    o.setAddress("/wekinator/control/stopDtwRecording 1");
 //    senderDeactivation.sendMessage(o);
+    
+    recorder.stopRecording();
+    recorder.saveToWav();
     
 }
 
