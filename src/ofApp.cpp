@@ -334,15 +334,15 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    bool activateRecord;
-    bool activatePlay;
+//    bool activateRecord;
+//    bool activatePlay;
     
     // loop 1
     if (key == 'q'){
         loop1.triggerRecord(activateRecord = true);
         // recordNow1 = true;
     } //else {
-//        loop1.triggerRecord(activate = false);
+        loop1.triggerRecord(activateRecord = false);
 //        // recordNow1 = false;
 //    }
 
@@ -351,7 +351,7 @@ void ofApp::keyPressed(int key){
         // playLoopNow1 = true;
     } //else {
 //        //playLoopNow1 = false;
-//        loop1.playLoop(activate = false);
+        loop1.playLoop(activatePlay = false);
 //    }
     
 //    // loop 2

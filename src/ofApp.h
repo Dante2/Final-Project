@@ -76,7 +76,7 @@ public:
 //    bool playLoopNow3;
     
     // loops
-    looper loop1, loop2, loop3;
+    looper loop1;
     
     // loop trigger
     bool activateRecord;
