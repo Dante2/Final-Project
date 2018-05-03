@@ -15,6 +15,8 @@ using std::boolalpha;
 //-------- RECORD LOOP --------//
 
 double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool recording){
+    index = audioIndex;
+    // cout << "record index = " << index << endl;
     loopLengthInSamples = loopLength;
     loopRecord = recording;
     if (loopRecord == true) {
@@ -23,9 +25,9 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
         if (counterRecord > loopLengthInSamples) {
             counterRecord = 0;
         }
-        myLoop[counterRecord] = signal[audioIndex];
-        myLoop[counterRecord + 1] = signal[audioIndex + 1];
-        cout << "loop recorded L = " << myLoop[counterRecord] << endl;
+        myLoop[counterRecord] = signal[index];
+        myLoop[counterRecord + 1] = signal[index + 1];
+//        cout << "loop recorded L = " << myLoop[counterRecord] << endl;
 //        cout << "loop recorded R = " << myLoop[counterRecord + 1] << endl;
     } else if (loopRecord == false){
         counterRecord = 0;
@@ -34,20 +36,16 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
 
 //-------- PLAY LOOP --------//
 
-double looper::playLoop(int audioIndex, bool playing){
+double looper::playLoop(bool playing){
     loopPlay = playing;
     if (loopPlay == true){
         counterPlay ++;
         if (counterPlay > loopLengthInSamples) {
             counterPlay = 0;
         }
-        myLoopOutputL[counterPlay] = myLoop[audioIndex];
-        // myLoopOutputR[counterPlay + 1] = myLoop[audioIndex + 1];
-        cout << "loop playing L = " << myLoopOutputL[counterPlay] << endl;
-        // return myLoopOutputL[counterPlay] = myLoop[audioIndex];
-        //return myLoopOutputR[counterPlay + 1] = myLoop[audioIndex + 1];
-        
-//        cout << "loop playing R = " << myLoopOutputR[counterPlay + 1] << endl;
+        myLoopOutput[counterPlay] = myLoop[index];
+        // cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
+        return (myLoopOutput[counterPlay]);
     } else if (loopPlay == false){
     counterPlay = 0;
     }

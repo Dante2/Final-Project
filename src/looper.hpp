@@ -21,14 +21,13 @@ class looper  {
     double myLoop[89000];
     int counterPlay = 0;
     bool loopPlay = false;
+    int index;
+    double myLoopOutput[90000];
     
     public:
-    double myLoopOutputL[90000];
-    // double myLoopOutputR[89000];
-    double signal;
+
     double recordLoop(int loopLength, int audioIndex, double signal[89000], bool recording);
-//    double playLoop(int audioIndex, double signal[89000], bool playing);
-    double playLoop(int audioIndex, bool playing);
+    double playLoop(bool playing);
     
 };
 
