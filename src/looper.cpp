@@ -45,7 +45,6 @@ double looper::playLoop(bool playing){
         }
         myLoopOutput[index] = myLoop[counterPlay];
         // cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
-        // return (myLoopOutput[counterPlay]);
     } else if (loopPlay == false){
     counterPlay = 0;
     }

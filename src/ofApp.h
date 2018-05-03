@@ -62,19 +62,21 @@ public:
     
     /* Looper */
 
-    bool recordNow;
-    bool playLoopNow;
-    looper loop1;
+    // trigger loop record and play functions. Pretty sure there's a way of assigning a trigger function to the loop class and then calling that trigger function for the particular instance of that loop.
+    // loop1
+    bool recordNow1;
+    bool playLoopNow1;
     
-    // int counterSync = 0;
-//    int counterPlay = 0;
-//    int counterRecord = 0;
-//    // hardcoding buffer size here. Probanly not a great idea
-//    double myLoop[89000];
-//    int loopLengthInSamples = 88200; // this is two seconds. you can have as many as you like
-//    bool loopPlay = false; //use a key to make these true
-//    bool loopRecord = false; // as above
-//    double myLoopOutput[512]; // This will be where we store the output
+    // loop2
+    bool recordNow2;
+    bool playLoopNow2;
+    
+    // loop3
+    bool recordNow3;
+    bool playLoopNow3;
+    
+    // loops
+    looper loop1, loop2, loop3;
     
     //MAXIMILIAN STUFF:
     double wave,sample,outputs[2], ifftVal;

@@ -27,6 +27,7 @@ class looper  {
     double myLoopOutput[512];
     double recordLoop(int loopLength, int audioIndex, double signal[89000], bool recording);
     double playLoop(bool playing);
+//    void triggerRecord();
     
 };
 

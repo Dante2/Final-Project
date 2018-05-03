@@ -291,16 +291,20 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //-------- LOOPER --------//
         
         // record loop
-        loop1.recordLoop(88200, i, inOut, recordNow);
+        loop1.recordLoop(88200, i, inOut, recordNow1);
+        loop2.recordLoop(88200, i, inOut, recordNow2);
+        loop3.recordLoop(88200, i, inOut, recordNow3);
         
         // play loop
-        loop1.playLoop(playLoopNow);
+        loop1.playLoop(playLoopNow1);
+        loop2.playLoop(playLoopNow2);
+        loop3.playLoop(playLoopNow3);
         
         float ampOut = 0.7;
 
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut;
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
         
-        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut;
+        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
     }
 }
 
@@ -331,41 +335,41 @@ void ofApp::keyPressed(int key){
     
     // loop 1
     if (key == 'q'){
-        recordNow = true;
+        recordNow1 = true;
     } else {
-        recordNow = false;
+        recordNow1 = false;
     }
 
     if (key == 'w'){
-        playLoopNow = true;
+        playLoopNow1 = true;
     } else {
-        playLoopNow = false;
+        playLoopNow1 = false;
     }
     
     // loop 2
-    if (key == 'q'){
-        recordNow = true;
+    if (key == 'a'){
+        recordNow2 = true;
     } else {
-        recordNow = false;
+        recordNow2 = false;
     }
     
-    if (key == 'w'){
-        playLoopNow = true;
+    if (key == 's'){
+        playLoopNow2 = true;
     } else {
-        playLoopNow = false;
+        playLoopNow2 = false;
     }
     
     // loop 3
-    if (key == 'q'){
-        recordNow = true;
+    if (key == 'z'){
+        recordNow3 = true;
     } else {
-        recordNow = false;
+        recordNow3 = false;
     }
     
-    if (key == 'w'){
-        playLoopNow = true;
+    if (key == 'x'){
+        playLoopNow3 = true;
     } else {
-        playLoopNow = false;
+        playLoopNow3 = false;
     }
 }
 
@@ -374,29 +378,29 @@ void ofApp::keyReleased(int key){
     
     // loop 1
     if (key == 'q'){
-        recordNow = false;
+        recordNow1 = false;
     }
 
     if (key == 'w'){
-        playLoopNow = false;
+        playLoopNow1 = false;
     }
     
     // loop 2
-    if (key == 'q'){
-        recordNow = false;
+    if (key == 'a'){
+        recordNow2 = false;
     }
     
-    if (key == 'w'){
-        playLoopNow = false;
+    if (key == 's'){
+        playLoopNow2 = false;
     }
     
     // loop 3
-    if (key == 'q'){
-        recordNow = false;
+    if (key == 'z'){
+        recordNow3 = false;
     }
     
-    if (key == 'w'){
-        playLoopNow = false;
+    if (key == 'x'){
+        playLoopNow3 = false;
     }
 }
 
