@@ -290,53 +290,17 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         //-------- LOOPER --------//
         
+        // record loop
+        loop1.recordLoop(88200, i, inOut, recordNow);
         
-        // loop1.recordLoop(88200, i, inOut, recordNow);
-//        loop1.playLoop(playLoopNow);
-
-        // RECORD LOOP
-        // record loop when boolean is set to true
-        if (loopRecord == true) {
-
-            // counter for loop recording
-            counterRecord ++;
-            // cout << "counter record = " << counterRecord << endl;
-
-            // if loop recording goes over allotted time set then return to the beginning
-            if (counterRecord > loopLengthInSamples) {
-                counterRecord = 0;
-            }
-
-            // array myLoop holds a recording by storing values taken from the input stream. We write to two versions of the array to retain the interleaving that takes place thus outputting audio to both right and left speaker.
-            myLoop[counterRecord] = inOut[i];
-            myLoop[counterRecord + 1] = inOut[i + 1];
-            // cout << "loopy record = " << counterRecord << endl;
-        }
-
-        // PLAY LOOPER
-        // record loop when boolean is set to true
-        if (loopPlay == true){
-
-            // counter for loop playback
-            counterPlay ++;
-
-            // if loop playback goes over allotted time set then return to the beginning
-            if (counterPlay > loopLengthInSamples) {
-                counterPlay = 0;
-            }
-
-            // array myLoopOutput holds finished loop. The recording held in myLoop is now sent to a dsedicated output for the looper. We write to two versions of the array to retain the interleaving that takes place as is done throughout the program thus outputting audio to both right and left speaker. This output is then added to the main output in the mix.
-            myLoopOutput[i] = myLoop[counterPlay];
-//            myLoopOutput[i + 1] = myLoop[counterPlay + 1];
-            // cout << "playhead = " << counterPlay << endl;
-            // cout << "loopy play = " << myLoopOutput << endl;
-        }
+        // play loop
+        loop1.playLoop(playLoopNow);
         
         float ampOut = 0.7;
 
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + myLoopOutput[i] * ampOut;
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut;
         
-        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + myLoopOutput[i] * ampOut;
+        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut;
     }
 }
 
@@ -365,51 +329,75 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-//    if (key == 's'){
-//        recordNow = true;
-//    } else {
-//        recordNow = false;
-//    }
-//
-//    if (key == 'd'){
-//        playLoopNow = true;
-//    } else {
-//        playLoopNow = false;
-//    }
-    
-    if (key == 's'){
-        loopRecord = true;
+    // loop 1
+    if (key == 'q'){
+        recordNow = true;
     } else {
-        loopRecord = false;
+        recordNow = false;
+    }
+
+    if (key == 'w'){
+        playLoopNow = true;
+    } else {
+        playLoopNow = false;
     }
     
-    if (key == 'd'){
-        loopPlay = true;
+    // loop 2
+    if (key == 'q'){
+        recordNow = true;
     } else {
-        loopPlay = false;
+        recordNow = false;
     }
     
+    if (key == 'w'){
+        playLoopNow = true;
+    } else {
+        playLoopNow = false;
+    }
+    
+    // loop 3
+    if (key == 'q'){
+        recordNow = true;
+    } else {
+        recordNow = false;
+    }
+    
+    if (key == 'w'){
+        playLoopNow = true;
+    } else {
+        playLoopNow = false;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-//    if (key == 's'){
-//        recordNow = false;
-//    }
-//
-//    if (key == 'd'){
-//        playLoopNow = false;
-//    }
+    // loop 1
+    if (key == 'q'){
+        recordNow = false;
+    }
 
-    if (key == 's'){
-        loopRecord = false;
+    if (key == 'w'){
+        playLoopNow = false;
     }
     
-    if (key == 'd'){
-        loopPlay = false;
+    // loop 2
+    if (key == 'q'){
+        recordNow = false;
     }
     
+    if (key == 'w'){
+        playLoopNow = false;
+    }
+    
+    // loop 3
+    if (key == 'q'){
+        recordNow = false;
+    }
+    
+    if (key == 'w'){
+        playLoopNow = false;
+    }
 }
 
 //--------------------------------------------------------------
