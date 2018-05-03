@@ -17,8 +17,6 @@ void ofApp::setup(){
     ofBackground(0, 0, 0);
     ofSetFrameRate(60);
     
-    // 8current_msg_string = 0;
-    
     /* This is stuff you always need.*/
     
     /* Sampling Rate */
@@ -44,12 +42,6 @@ void ofApp::setup(){
     
     memset(lAudioIn, 0, initialBufferSize * sizeof(float));
     memset(rAudioIn, 0, initialBufferSize * sizeof(float));
-    
-    // ------- RECORDER ------- //
-    // Here we define a double floating value that will contain our
-    // frame of lovely maximilian generated audio
-    recorder.setup("/Users/jools/Desktop/Mess_Around/monkeyLover.wav");
-    recorder.startRecording();
     
     // ------- FFT ------- //
     
@@ -126,8 +118,6 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-
-    // currently using 'rms toggle' for switching on recording and the rms threshold for activating the recording mehanism in Weki. Perhaps I can then set the activation of the recording mode with accelrometer gesture (wave of the arm)? This would then switch it on in here or trigger activation of Weki's GUI to set it to record.
     
     // ----- send OSC ----- //
     
@@ -143,17 +133,13 @@ void ofApp::update(){
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
         if (RMS > 3){
-            //cout << "RMS On = " << RMS << endl;
             switchedOn = true;
-            //cout << "1. OSC Out switch = " << std::boolalpha << switchedOn << endl;
             n.setAddress("/wekinator/control/startDtwRecording");
             senderActivation.sendMessage(n);
             // cout << "message out = " << m.getAddress() << endl;
             
             if (switchedOn == true){
-                    //cout << "RMS Off = " << RMS << endl;
                     switchedOn = false;
-                    //cout << "2. OSC Out switch = " << std::boolalpha << switchedOn << endl;
                     o.setAddress("/wekinator/control/stopDtwRecording");
                     senderDeactivation.sendMessage(o);
                     switchedOn = false;
@@ -163,31 +149,19 @@ void ofApp::update(){
     
         // ----- receive OSC ----- //
         receiver.getNextMessage(&m);
-        
-        /* at the moment messages being received are hardcoded. The web idea is supposed to allow for more dynamic selection of class messages. A for loop iterating through a list of messages sent by wekinator. This most likely means better knowledge of the osc class within OF to que messages and work with lists of messages */
     
         // get class 1 for activation
         if(m.getAddress() == "/output_1"){
             messages = m.getAddress();
-            // get the first argument (we're only sending one) as a string
-            
-            // recorder.startRecording();
             
             cout << "message = " << messages << endl;
         
         // get class 2 for activation
         } else if (m.getAddress() == "/output_2"){
             messages = m.getAddress();
-            // get the first argument (we're only sending one) as a string
-            
-            // recorder.stopRecording();
             
             cout << "message = " << messages << endl;
     }
-
-    // This is how to send message to weki to sart recording.
-    // http://www.wekinator.org/detailed-instructions/#Customizing_DTW8217s_behavior
-
 }
 
 //--------------------------------------------------------------
@@ -216,9 +190,9 @@ void ofApp::draw(){
     for(int i = 0; i < 13; i++) {
         float height = mfccs[i] * 100.0;
         ofRect(horizOffset + (i*xinc),mfccTop - height,40, height);
-        //        cout << mfccs[i] << ",";
+                // cout << mfccs[i] << ",";
     }
-    
+
     ofSetColor(255, 255, 255,255);
 //
 //    char peakString[255]; // an array of chars
@@ -264,9 +238,10 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
     // using this audio output method seems to deactivate the mfcc GUI but is currently giving me very distorted sound //
     for (int i = 0; i < bufferSize; i++){
-    wave = lAudioIn[i];
-    //std::cout << "audio = " << wave << endl;
-    if (mfft.process(wave)) {
+        
+        wave = lAudioIn[i];
+        //std::cout << "audio = " << wave << endl;
+        if (mfft.process(wave)) {
 
         int bins   = fftSize / 2.0;
         //do some manipulation
@@ -278,50 +253,96 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 //        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
 //        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
 
-        //----- THIS CHROMOGRAM CAN BE USED FOR PITCH IDENTIFICATION LATER -----//
+        //----- THIS CHROMOGRAM CAN BE USED FOR PITCH RECOGNITION LATER -----//
 
-        /* for (int j = 0; j < 12; j++) {
-         chromagram[j] = 0;
-         }
-         int j = 0;
-         for (int i = 0; i < oct.nAverages; i++) {
-         chromagram[j] += oct.averages[i];
-         j++;
-         j = j % 12;
-         } */
+        
+            /* for (int j = 0; j < 12; j++) {
+             chromagram[j] = 0;
+             }
+             int j = 0;
+             for (int i = 0; i < oct.nAverages; i++) {
+             chromagram[j] += oct.averages[i];
+             j++;
+             j = j % 12;
+             } */
 
-        mfft.magsToDB();
-        oct.calculate(mfft.magnitudesDB);
+            mfft.magsToDB();
+            oct.calculate(mfft.magnitudesDB);
 
-        float sum = 0;
-        float maxFreq = 0;
-        int maxBin = 0;
+            float sum = 0;
+            float maxFreq = 0;
+            int maxBin = 0;
 
-        for (int i = 0; i < fftSize/2; i++) {
-            sum += mfft.magnitudes[i];
-            if (mfft.magnitudes[i] > maxFreq) {
-                maxFreq=mfft.magnitudes[i];
-                maxBin = i;
+            for (int i = 0; i < fftSize/2; i++) {
+                sum += mfft.magnitudes[i];
+                if (mfft.magnitudes[i] > maxFreq) {
+                    maxFreq=mfft.magnitudes[i];
+                    maxBin = i;
+                }
             }
+            
+            centroid = sum / (fftSize / 2);
+            peakFreq = (float)maxBin/fftSize * 44100;
+
+            mfcc.mfcc(mfft.magnitudes, mfccs);
+            // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
         }
-        centroid = sum / (fftSize / 2);
-        peakFreq = (float)maxBin/fftSize * 44100;
+        
+        //-------- LOOPER --------//
+        
+        //loop1.triggerLoopRecord(trigger);
+//        cout << "trigger = " << loop1.triggerLoopRecord(trigger) << endl;
+//        cout << boolalpha << "trigger = " << loop1.triggerLoopRecord(trigger) << endl;
+        
+        //loop1.recordLoop(88200, inOut, recordNow);
+        
+        
+        loop1.recordLoop(88200, inOut[i], inOut, recordNow);
+        loop1.playLoop(inOut[i], playLoopNow);
 
-        mfcc.mfcc(mfft.magnitudes, mfccs);
-        // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
-    }
+        // RECORD LOOP
+        // record loop when boolean is set to true
+//        if (loopRecord == true) {
+//
+//            // counter for loop recording
+//            counterRecord ++;
+//            // cout << "counter record = " << counterRecord << endl;
+//
+//            // if loop recording goes over allotted time set then return to the beginning
+//            if (counterRecord > loopLengthInSamples) {
+//                counterRecord = 0;
+//            }
+//
+//            // array myLoop holds a recording by storing values taken from the input stream. We write to two versions of the array to retain the interleaving that takes place thus outputting audio to both right and left speaker.
+//            myLoop[counterRecord] = inOut[i];
+//            myLoop[counterRecord + 1] = inOut[i + 1];
+//            // cout << "loopy record = " << counterRecord << endl;
+//        }
+//
+//        // PLAY LOOPER
+//        // record loop when boolean is set to true
+//        if (loopPlay == true){
+//
+//            // counter for loop playback
+//            counterPlay ++;
+//
+//            // if loop playback goes over allotted time set then return to the beginning
+//            if (counterPlay > loopLengthInSamples) {
+//                counterPlay = 0;
+//            }
+//
+//            // array myLoopOutput holds finished loop. The recording held in myLoop is now sent to a dsedicated output for the looper. We write to two versions of the array to retain the interleaving that takes place as is done throughout the program thus outputting audio to both right and left speaker. This output is then added to the main output in the mix.
+//            myLoopOutput[i] = myLoop[counterPlay];
+//            myLoopOutput[i + 1] = myLoop[counterPlay + 1];
+//            // cout << "playhead = " << counterPlay << endl;
+//            // cout << "loopy play = " << myLoopOutput << endl;
+//        }
+        
+        float ampOut = 0.7;
 
-        float ampOut = 1;
-
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut; /* You may end up with lots of outputs. add them here */
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut;
+        
         output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
-    }
-
-    // Switch recording on and off
-    if (recordMode == true){
-        recorder.passData(output, 1024);
-    } else {
-        recordMode == false;
     }
 }
 
@@ -335,7 +356,7 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
         lAudioIn[i] = input[i*2];
         rAudioIn[i] = input[i*2+1];
         
-        // our array for jacking in our audio input stream
+        // our array for jacking in our live audio input stream
         inOut[i] = input[i*2];
         
         // sum is done for our stereo output
@@ -350,17 +371,29 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     
-    if (key == 'a'){
-        recorder.startRecording();
-            recordMode = true;
+    if (key == 's'){
+        recordNow = true;
+    } else {
+        recordNow = false;
     }
-    
+                                     
+    if (key == 'd'){
+        playLoopNow = true;
+    } else {
+        playLoopNow = false;
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
     
-    recorder.saveToWav();
+    if (key == 's'){
+        recordNow = false;
+    }
+
+    if (key == 'd'){
+        playLoopNow = false;
+    }
     
 }
 
