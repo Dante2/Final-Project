@@ -64,19 +64,23 @@ public:
 
     // trigger loop record and play functions. Pretty sure there's a way of assigning a trigger function to the loop class and then calling that trigger function for the particular instance of that loop.
     // loop1
-    bool recordNow1;
-    bool playLoopNow1;
-    
-    // loop2
-    bool recordNow2;
-    bool playLoopNow2;
-    
-    // loop3
-    bool recordNow3;
-    bool playLoopNow3;
+//    bool recordNow1;
+//    bool playLoopNow1;
+//    
+//    // loop2
+//    bool recordNow2;
+//    bool playLoopNow2;
+//    
+//    // loop3
+//    bool recordNow3;
+//    bool playLoopNow3;
     
     // loops
     looper loop1, loop2, loop3;
+    
+    // loop trigger
+    bool activateRecord;
+    bool activatePlay;
     
     //MAXIMILIAN STUFF:
     double wave,sample,outputs[2], ifftVal;

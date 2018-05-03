@@ -25,9 +25,10 @@ class looper  {
     
     public:
     double myLoopOutput[512];
-    double recordLoop(int loopLength, int audioIndex, double signal[89000], bool recording);
+    double recordLoop(int loopLength, int audioIndex, double signal[89000]);
     double playLoop(bool playing);
-//    void triggerRecord();
+    void triggerRecord(bool switchOnRecord);
+    void triggerPlayBack(bool switchOnPlay);
     
 };
 
