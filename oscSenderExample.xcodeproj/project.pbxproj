@@ -10,6 +10,7 @@
 		0546D1A38E13BD319CC9755B /* OscReceivedElements.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9BF3AA0D4FAA89D0F8A0E545 /* OscReceivedElements.cpp */; };
 		4ADB88E2FB52E76A471065DE /* ofxOscParameterSync.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0AED834CE4DEC5260AF302A2 /* ofxOscParameterSync.cpp */; };
 		510CAFE035E576A4E1502D52 /* UdpSocket.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6DEF695B88BA5FAACEAA937 /* UdpSocket.cpp */; };
+		5432C07F209C6AFC00C27DB4 /* synth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5432C07D209C6AFC00C27DB4 /* synth.cpp */; };
 		546DCD84209A09F900730047 /* looper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 546DCD82209A09F900730047 /* looper.cpp */; };
 		54A335AA203D9F0F00C32070 /* maxiMFCC.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54A3359B203D9F0F00C32070 /* maxiMFCC.cpp */; };
 		54A335AB203D9F0F00C32070 /* fft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54A3359D203D9F0F00C32070 /* fft.cpp */; };
@@ -81,6 +82,8 @@
 		444657A12E59D0ED86981498 /* TimerListener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = TimerListener.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/TimerListener.h; sourceTree = SOURCE_ROOT; };
 		48974F980F51769171D0B2F5 /* IpEndpointName.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = IpEndpointName.h; path = ../../../addons/ofxOsc/libs/oscpack/src/ip/IpEndpointName.h; sourceTree = SOURCE_ROOT; };
 		4E95FB446A9C9C6F0DE12D75 /* OscPrintReceivedElements.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscPrintReceivedElements.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscPrintReceivedElements.h; sourceTree = SOURCE_ROOT; };
+		5432C07D209C6AFC00C27DB4 /* synth.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = synth.cpp; sourceTree = "<group>"; };
+		5432C07E209C6AFC00C27DB4 /* synth.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = synth.hpp; sourceTree = "<group>"; };
 		546DCD82209A09F900730047 /* looper.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = looper.cpp; sourceTree = "<group>"; };
 		546DCD83209A09F900730047 /* looper.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = looper.hpp; sourceTree = "<group>"; };
 		54A33595203D9F0F00C32070 /* install.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = install.xml; sourceTree = "<group>"; };
@@ -355,6 +358,8 @@
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
 				546DCD82209A09F900730047 /* looper.cpp */,
 				546DCD83209A09F900730047 /* looper.hpp */,
+				5432C07D209C6AFC00C27DB4 /* synth.cpp */,
+				5432C07E209C6AFC00C27DB4 /* synth.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -494,6 +499,7 @@
 				54A335AB203D9F0F00C32070 /* fft.cpp in Sources */,
 				54C381112041A72200B50DAC /* ofxToggle.cpp in Sources */,
 				54A335B1203D9F0F00C32070 /* maximilian.cpp in Sources */,
+				5432C07F209C6AFC00C27DB4 /* synth.cpp in Sources */,
 				67FE4C7B15C2F0478C8126C2 /* NetworkingUtils.cpp in Sources */,
 				54A335AA203D9F0F00C32070 /* maxiMFCC.cpp in Sources */,
 				ADE367465D2A8EBAD4C7A8D9 /* IpEndpointName.cpp in Sources */,
@@ -614,6 +620,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)/ofxMyo/libs/myo/lib/osx",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -650,6 +657,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)/ofxMyo/libs/myo/lib/osx",
 				);
 				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)/../../../libs/glut/lib/osx\"";
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;

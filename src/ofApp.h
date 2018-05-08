@@ -1,11 +1,16 @@
 #ifndef _TEST_APP
 #define _TEST_APP
+
+//#pragma once
+
 #include "ofMain.h"
 #include "ofxMaxim.h"
 #include "ofxGui.h"
 #include "ofxOsc.h"
+//#include "ofxMyo.h"
 #include "maxiMFCC.h"
 #include "looper.hpp"
+#include "synth.hpp"
 
 // ------ this has now been set up in app.setup ------ //
 
@@ -23,6 +28,7 @@ public:
     void setup();
     void update();
     void draw();
+//    void exit();
     
     void keyPressed  (int key);
     void keyReleased(int key);
@@ -60,9 +66,28 @@ public:
     int initialBufferSize;
     int sampleRate;
     
+    //--------- SYNTH ----------//
+    maxiClock myClock;
+    maxiEnv ADSR[6];
+    double synthMix;
+    int currentCount, voice;
+    double pitch[6];
+    maxiOsc VCO1, VCO2, VCO3[6], VCO4[6], myCounter, LFO1, LFO2, LFO3[6];
+    double VCO1out, VCO2out, VCO3out[6], VCO4out[6], LFO1out, LFO2out, LFO3out[6];
+    double VCF1out, VCF2out, VCF3out[6];
+    double ADSRout[6];
+    maxiFilter VCF1, VCF2, VCF3[6];
+    
+    bool playSynth;
+    
+    synth synth1;
+    
     /* Looper */
 
-    // trigger loop record and play functions. Pretty sure there's a way of assigning a trigger function to the loop class and then calling that trigger function for the particular instance of that loop.
+    // loops
+    looper loop1, loop2, loop3;
+    
+    // triggers for each loops' functionalities
     // loop1
     bool recordNow1;
     bool playLoopNow1;
@@ -75,20 +100,10 @@ public:
     bool recordNow3;
     bool playLoopNow3;
     
-    // loops
-    looper loop1, loop2, loop3;
-    
     //MAXIMILIAN STUFF:
     double wave,sample,outputs[2], ifftVal;
-
-    // necessary????
-//    maxiMix mymix;
-    maxiOsc osc, myCounter, mySwitchableOsc;
-    int CurrentCount;
-    double myOscOutput;
     
-    maxiOsc mySine1;
-    
+    // Pitch recognition??
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;
     float *ifftOutput;
@@ -109,7 +124,7 @@ public:
     maxiMFCC mfcc;
     double *mfccs;
     
-    maxiSample samp;
+    // maxiSample samp;
     
     // GUI STUFF
     bool bHide;
@@ -127,13 +142,15 @@ public:
 
     // soundstream
     ofSoundStream audioStream;
+    
+    
 
     // ----- OSC ------ //
+    // Needs to go into a class of its own
     
     // ----- SEND ----- //
     // ofxOscSender object
     ofxOscSender sender, senderActivation, senderDeactivation;
-    
     
     // IP address we're sending to
     string destination;
@@ -152,7 +169,18 @@ public:
     // port where we listen for messages
     int recvPort;
     // string containing the received messages for display
+    
+    // receive raw Myo data
+    int recvRawMyo;
     string messages;
+    
+    //----- Myo -----//
+//    ofxMyo::Myo myo;
+    
+    float emg = 0;
+    float gyro = 0;
+    float quaternion = 0;
+  
     
 };
 

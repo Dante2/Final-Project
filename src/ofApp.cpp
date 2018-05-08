@@ -25,6 +25,10 @@ void ofApp::setup(){
     // Buffer Size
     initialBufferSize = 512;
     
+//    // maxiclock
+//    myClock.setTicksPerBeat(4);
+//    myClock.setTempo(90);
+    
     /* outputs */
     lAudioOut = new float[initialBufferSize];
     rAudioOut = new float[initialBufferSize];
@@ -103,7 +107,7 @@ void ofApp::setup(){
     
     destination = "localhost";
     
-    //sendPort = 6448;
+    // send OSC
     sendPort = 6450;
     sendPortActivate = 6452;
     sendPortDeactivate = 6453;
@@ -112,8 +116,15 @@ void ofApp::setup(){
     senderActivation.setup(destination, sendPortActivate);
     senderDeactivation.setup(destination, sendPortDeactivate);
     
+    // receive OSC
     recvPort = 12000;
+    recvRawMyo = 5431;
     receiver.setup(recvPort);
+    receiver.setup(recvRawMyo);
+    
+    //------ myo ------//
+    
+//    myo.setup();
 }
 
 //--------------------------------------------------------------
@@ -132,7 +143,8 @@ void ofApp::update(){
         
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
-        if (RMS > 3){
+//        if (RMS > 3){
+        if (RMS > 0.5){
             switchedOn = true;
             n.setAddress("/wekinator/control/startDtwRecording");
             senderActivation.sendMessage(n);
@@ -147,25 +159,56 @@ void ofApp::update(){
             }
         }
     
-        // ----- receive OSC ----- //
-        receiver.getNextMessage(&m);
+    // ----- receive OSC ----- //
     
-        // get class 1 for activation
-        if(m.getAddress() == "/output_1"){
-            messages = m.getAddress();
-            
-            cout << "message = " << messages << endl;
+    // ofxOscMessage p, q, r;
+    
+    receiver.getNextMessage(&m);
+    
+    // Receiveing gesture output messages
+    
+    // get class 1 for activation
+    if(m.getAddress() == "/output_1"){
+        messages = m.getAddress();
+        cout << "message = " << messages << endl;
         
-        // get class 2 for activation
-        } else if (m.getAddress() == "/output_2"){
-            messages = m.getAddress();
-            
-            cout << "message = " << messages << endl;
+    // get class 2 for activation
+    } else if (m.getAddress() == "/output_2"){
+        messages = m.getAddress();
+        cout << "message = " << messages << endl;
+    } 
+    
+    // ----- raw Myo data ----- //
+    
+    
+    while(receiver.hasWaitingMessages()) {
+        ofxOscMessage p;
+        receiver.getNextMessage(&p);
+
+        if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
+            emg = p.getArgAsFloat(0);
+            cout << "emg = " << emg << endl;
+        }
+        
+        // can't seem to get anyq gyro data through. I reckon this is down to Myo Mapper putting out the wrong OSC message for this selection.
+        if(p.getAddress() == "/myo1/gyro/fod"){
+            gyro = p.getArgAsFloat(0);
+            cout << "gyro = " << gyro << endl;
+        }
+        
+        if(p.getAddress() == "/myo1/orientation/quaternion"){
+            quaternion = p.getArgAsFloat(0);
+            cout << "quaternion = " << quaternion << endl;
+        }
+        
+        
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+    
+    
     
     float horizWidth = 500.;
     float horizOffset = 100;
@@ -226,7 +269,44 @@ void ofApp::draw(){
     if( bHide ){
         gui.draw();
     }
+
+//    ofSetColor(255);
+//    for ( int i=0; i<myo.getDevices().size(); i++ ) {
+//        stringstream s;
+//        s << "id: " << myo.getDevices()[i]->getId() << endl;
+//        s << "which: " << myo.getDevices()[i]->getWhichArm() << endl;
+//        s << "pose: " << myo.getDevices()[i]->getPose() << endl;
+//        s << "accel:          ";
+//        s << myo.getDevices()[i]->getAccel().x << ",";
+//        s << myo.getDevices()[i]->getAccel().y << ",";
+//        s << myo.getDevices()[i]->getAccel().z << endl;
+//        s << "gyro:           ";
+//        s << myo.getDevices()[i]->getGyro().x << ",";
+//        s << myo.getDevices()[i]->getGyro().y << ",";
+//        s << myo.getDevices()[i]->getGyro().z << endl;
+//        s << "quaternion:     ";
+//        s << myo.getDevices()[i]->getQuaternion().x() << ",";
+//        s << myo.getDevices()[i]->getQuaternion().y() << ",";
+//        s << myo.getDevices()[i]->getQuaternion().z() << ",";
+//        s << myo.getDevices()[i]->getQuaternion().w() << endl;
+//        s << "roll/pitch/yaw: ";
+//        s << myo.getDevices()[i]->getRoll() << ",";
+//        s << myo.getDevices()[i]->getPitch() << ",";
+//        s << myo.getDevices()[i]->getYaw() << endl;
+//        s << "raw data:       ";
+//        for ( int j=0; j<8; j++ ) {
+//            s << myo.getDevices()[i]->getEmgSamples()[j];
+//            s << ",";
+//        }
+//        s << endl;
+//        ofSetColor(255);
+//        ofDrawBitmapString(s.str(), 0,12 + i*100);
+//    }
 }
+
+//void ofApp::exit(){
+//    myo.stop();
+//}
 
 //--------------------------------------------------------------
 void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
@@ -288,6 +368,10 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
             // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
         }
         
+        //-------- SYNTH --------//
+        
+        synth1.polySynth(playSynth);
+        
         //-------- LOOPER --------//
         
         // record loop
@@ -299,12 +383,12 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         loop1.playLoop(playLoopNow1);
         loop2.playLoop(playLoopNow2);
         loop3.playLoop(playLoopNow3);
-        
+
         float ampOut = 0.7;
 
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
         
-        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
     }
 }
 
@@ -371,6 +455,28 @@ void ofApp::keyPressed(int key){
     } else {
         playLoopNow3 = false;
     }
+    
+    // play all loops
+    if (key == 'e'){
+        playLoopNow1 = true;
+        playLoopNow2 = true;
+        playLoopNow3 = true;
+    }
+    
+    // play synth
+    if (key == 'd'){
+        playSynth = true;
+    } else {
+        playSynth = false;
+    }
+    
+    // play everything
+    if (key == 'c'){
+        playLoopNow1 = true;
+        playLoopNow2 = true;
+        playLoopNow3 = true;
+        playSynth = true;
+    }
 }
 
 //--------------------------------------------------------------
@@ -402,6 +508,27 @@ void ofApp::keyReleased(int key){
     if (key == 'x'){
         playLoopNow3 = false;
     }
+    
+    // all loops
+    if (key == 'e'){
+        playLoopNow1 = false;
+        playLoopNow2 = false;
+        playLoopNow3 = false;
+    }
+    
+    // stop synth
+    if (key == 'd'){
+        playSynth = false;
+    }
+    
+    // everything
+    if (key == 'c'){
+        playLoopNow1 = false;
+        playLoopNow2 = false;
+        playLoopNow3 = false;
+        playSynth = false;
+    }
+    
 }
 
 //--------------------------------------------------------------
