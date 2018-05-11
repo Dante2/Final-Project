@@ -12,12 +12,14 @@ using std::endl;
 using std::cin;
 using std::boolalpha;
 
-double synth::polySynth(bool play){
+double synth::polySynth(bool play, double tone, float vol){
     
 //    ticky = ticks;
 //    BPM = tempo;
 //    counter = index;
     playMe = play;
+    volume = vol;
+    pitch = tone;
 
     if (playMe == true){
         //cout << boolalpha << "synth playing = " << playMe <<endl;
@@ -62,7 +64,7 @@ double synth::polySynth(bool play){
             ADSR[i].trigger = 0;
             
             // cout << "synthMix = " << synthMix <<endl;
-            mySynthOutput = synthMix;
+            mySynthOutput = synthMix * volume;
         }
     }
 }

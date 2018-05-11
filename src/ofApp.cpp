@@ -64,12 +64,11 @@ void ofApp::setup(){
     
     ofxMaxiSettings::setup(sampleRate, 2, initialBufferSize);
     
-    // ------ HEEELLLPPPPP ----- //
-    /* as far as I can tell this sets up Maxim whereas the 'audiostream one sets up the audio for soundcard. However both audiostream and of ofSoundStream both refer to the same thing so a bit confused */
+    /* ofSoundstream and audioStream both refer to ofSoundstream objects and as far as I know should be called at the end of all of this however I have found that in order to get this all working I have had to call it twice in the way that I am doing here */
     ofSoundStreamSetup(2, 2, this, sampleRate, initialBufferSize, 4);/* Call this last ! */
     
     // ------ GUI STUFF ------ //
-    gui.setup(); // most of the time you don't need a name
+    gui.setup();
     gui.add(mfccToggle.setup("MFCCs (timbre/vocal) (13 inputs)", true));
     gui.add(rmsToggle.setup("RMS (volume) (13 input)", false));
     
@@ -125,6 +124,11 @@ void ofApp::setup(){
     //------ myo ------//
     
 //    myo.setup();
+    
+    // ----- variable filter ------ //
+    
+    myVarFilter.setCutoff(1000);
+    myVarFilter.setResonance(0.2);
 }
 
 //--------------------------------------------------------------
@@ -230,21 +234,12 @@ void ofApp::draw(){
     xinc = horizWidth / 13;
     for(int i = 0; i < 13; i++) {
         float height = mfccs[i] * 100.0;
-        ofRect(horizOffset + (i*xinc),mfccTop - height,40, height);
+        ofRect(horizOffset + (i*xinc), mfccTop - height, 40, height);
                 // cout << mfccs[i] << ",";
     }
-
-    ofSetColor(255, 255, 255,255);
-//
-//    char peakString[255]; // an array of chars
-//    sprintf(peakString, "Peak Frequency: %.2f", peakFreq);
-//    //myFont.drawString(peakString, 12, chromagramTop + 50);
-//
-//    char centroidString[255]; // an array of chars
-//    sprintf(centroidString, "Spectral Centroid: %f", centroid);
-//    //myFont.drawString(centroidString, 12, chromagramTop + 80);
     
     char rmsString[255]; // an array of chars
+    
    // sprintf(rmsString, "RMS: %.2f", RMS);
     //myFont.drawString(rmsString, 12, chromagramTop + 110);
     
@@ -277,7 +272,6 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
 //--------------------------------------------------------------
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
-    // using this audio output method seems to deactivate the mfcc GUI but is currently giving me very distorted sound //
     for (int i = 0; i < bufferSize; i++){
         
         wave = lAudioIn[i];
@@ -331,7 +325,8 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         //-------- SYNTH --------//
         
-        synth1.polySynth(playSynth);
+        // synth object takes arguments boolean for playback and float for amplitude / volume
+        synth1.polySynth(playSynth, 0.5);
         
         //-------- LOOPER --------//
         
@@ -345,11 +340,27 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         loop2.playLoop(playLoopNow2);
         loop3.playLoop(playLoopNow3);
 
-        float ampOut = 0.7;
+        float ampOut = 0.3;
 
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+//
+//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+
         
-        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+//        output[i*nChannels    ] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+//
+//        output[i*nChannels + 1] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+
+        // live audio feeding into SVF with band pass and notch being controlled by mouse X and Y
+        // low pass / band pass / high pass / notch
+//        output[i * nChannels] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
+//
+//        output[i * nChannels + 1] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
+        
+        output[i * nChannels] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseX()) + inOut[i];
+
+        output[i * nChannels + 1] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseY()) + inOut[i];
+    
     }
 }
 

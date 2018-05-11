@@ -12,14 +12,6 @@
 #include "looper.hpp"
 #include "synth.hpp"
 
-// ------ this has now been set up in app.setup ------ //
-
-//#define HOST "localhost"
-//send on port 6448
-//#define PORT 6448
-//listen on port 12000
-//#define PORT2 12000
-
 class ofApp : public ofBaseApp{
     
 public:
@@ -49,7 +41,7 @@ public:
     float * lAudioOut;
     float * rAudioOut;
     
-    // hardcoding buffer size here. Probanly not a great idea
+    // array for passing audio values around
     double inOut[512];
     
     //------ EFFECTS RACK ------//
@@ -177,11 +169,13 @@ public:
     //----- Myo -----//
 //    ofxMyo::Myo myo;
     
+    // ----- myo mapper ------ //
     float emg = 0;
     float gyro = 0;
     float quaternion = 0;
-  
     
+    maxiSVF myVarFilter;
+  
 };
 
 #endif

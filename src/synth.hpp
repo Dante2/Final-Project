@@ -18,6 +18,7 @@ class synth  {
     int BPM;
     int counter;
     bool playMe;
+    float volume;
     
     maxiEnv ADSR[6];
     int currentCount, voice;
@@ -36,7 +37,7 @@ public:
     double mySynthOutput;
     
     // double polySynth(int ticks, int tempo, int index, double signal[], bool play);
-    double polySynth(bool play);
+    double polySynth(bool play, double tone, float vol);
 };
 
 #endif /* synth_hpp */
