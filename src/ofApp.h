@@ -54,6 +54,8 @@ public:
     float * lAudioIn;
     float * rAudioIn;
     
+    float * synthIn;
+    
     /* buffer size */
     int initialBufferSize;
     int sampleRate;
@@ -93,7 +95,7 @@ public:
     bool playLoopNow3;
     
     //MAXIMILIAN STUFF:
-    double wave,sample,outputs[2], ifftVal;
+    double wave, wave2, sample, outputs[2], ifftVal;
     
     // Pitch recognition??
     ofxMaxiFFTOctaveAnalyzer oct;
@@ -108,9 +110,12 @@ public:
     
     // FFT
     ofxMaxiIFFT ifft;
-    ofxMaxiFFT mfft;
+    ofxMaxiFFT mfft, mfft2;
     int fftSize;
     int bins, dataSize;
+    
+    bool convolve;
+    double convolveOut;
     
     // MFCC
     maxiMFCC mfcc;

@@ -12,14 +12,14 @@ using std::endl;
 using std::cin;
 using std::boolalpha;
 
-double synth::polySynth(bool play, double tone, float vol){
-    
+double synth::polySynth(bool play, double signal[], float vol){
+
 //    ticky = ticks;
 //    BPM = tempo;
 //    counter = index;
     playMe = play;
     volume = vol;
-    pitch = tone;
+//    pitch = signal;
 
     if (playMe == true){
         //cout << boolalpha << "synth playing = " << playMe <<endl;
@@ -47,9 +47,9 @@ double synth::polySynth(bool play, double tone, float vol){
             voice ++;
             // cout << "voice = " << voice <<endl;
         }
-    
+
     //--- oscillators ---//
-        
+
         for (int i = 0; i < 6; i++) {
             ADSRout[i] = ADSR[i].adsr(1., ADSR[i].trigger);
             LFO3out[i] = LFO3[i].sinebuf(0.2);
@@ -58,13 +58,12 @@ double synth::polySynth(bool play, double tone, float vol){
             VCF3out[i] = VCF3[i].lores((VCO3out[i] + VCO4out[i]) * 0.5, 250 + ((pitch[i] + LFO3out[i]) * 1000), 10);
             synthMix += VCF3out[i] * ADSRout[i] / 6;
         }
-        
+
         // reset ADSR
         for (int i=0; i < 6; i++) {
             ADSR[i].trigger = 0;
-            
-            // cout << "synthMix = " << synthMix <<endl;
             mySynthOutput = synthMix * volume;
         }
     }
 }
+

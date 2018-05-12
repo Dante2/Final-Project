@@ -33,11 +33,11 @@ void ofApp::setup(){
     lAudioOut = new float[initialBufferSize];
     rAudioOut = new float[initialBufferSize];
     
-    vector<float> spitOut (initialBufferSize);
-    
     /* inputs */
     lAudioIn = new float[initialBufferSize];
     rAudioIn = new float[initialBufferSize];
+    synthIn = new float[initialBufferSize];
+    
     
     // memset?
     /* This is a nice safe piece of code */
@@ -51,6 +51,7 @@ void ofApp::setup(){
     
     fftSize = 1024;
     mfft.setup(fftSize, 512, 256);
+    mfft2.setup(fftSize, 512, 256);
     ifft.setup(fftSize, 512, 256);
     
     nAverages = 12;
@@ -69,10 +70,13 @@ void ofApp::setup(){
     
     // ------ GUI STUFF ------ //
     gui.setup();
+    gui.add(fftToggle.setup("FFT bin magnitudes (pitch/timbre/volume) (512 inputs)", true));
     gui.add(mfccToggle.setup("MFCCs (timbre/vocal) (13 inputs)", true));
     gui.add(rmsToggle.setup("RMS (volume) (13 input)", false));
     
     bHide = true;
+    
+    ofSetVerticalSync(true);
     
     // ------ audio stream ------ //
     
@@ -99,8 +103,6 @@ void ofApp::setup(){
     // this is outputting no of channels as defined in stream setup
     audioStream.getNumInputChannels();
     // std::cout << "no of input channels = " << audioStream.getNumInputChannels() << endl;
-    
-    ofSetVerticalSync(true);
     
     // ----- OSC stuff ----- //
     
@@ -214,7 +216,7 @@ void ofApp::draw(){
     
     float horizWidth = 500.;
     float horizOffset = 100;
-    //float fftTop = 250;
+    float fftTop = 250;
     float mfccTop = 350;
     //float chromagramTop = 450;
     
@@ -222,12 +224,11 @@ void ofApp::draw(){
     
     //FFT magnitudes:
     float xinc = horizWidth / fftSize * 2.0;
-//    for(int i=0; i < fftSize / 2; i++) {
-//        float height = mfft.magnitudes[i] * 100;
-//        ofRect(horizOffset + (i*xinc),250 - height,2, height);
-//    }
-//    //myFont.drawString("FFT:", 30, 250);
-    
+    for(int i=0; i < fftSize / 2; i++) {
+        float height = mfft.magnitudes[i] * 100;
+        ofRect(horizOffset + (i*xinc),250 - height,2, height);
+    }
+    // myFont.drawString("FFT:", 30, 250);
     
     //MFCCs:
     ofSetColor(0, 255, 0,200);
@@ -244,6 +245,10 @@ void ofApp::draw(){
     //myFont.drawString(rmsString, 12, chromagramTop + 110);
     
     int numInputs = 0;
+    
+    if (fftToggle) {
+        numInputs += fftSize/2;
+    }
 
     if (mfccToggle) {
         numInputs += 13;
@@ -273,9 +278,43 @@ void ofApp::audioRequested     (float * output, int bufferSize, int nChannels){
 void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
     for (int i = 0; i < bufferSize; i++){
+
+        //------ FFT AND MFCC ------//
+        
+//        wave2 = synth1.mySynthOutput;
+//        cout << "wave2 = " << wave2 << endl;
+        
+        //------ FFT ON SYNTH OUTPUT ------//
+        
+        if (convolve){
+            
+            wave2 = synth1.mySynthOutput;
+
+            if (mfft2.process(wave2)) {
+                int bins   = fftSize / 2.0;
+                mfft2.magsToDB();
+                oct.calculate(mfft2.magnitudesDB);
+                float sum = 0;
+                float maxFreq = 0;
+                int maxBin = 0;
+
+                for (int i = 0; i < fftSize/2; i++) {
+                    sum += mfft2.magnitudes[i];
+                    
+                    if (mfft2.magnitudes[i] > maxFreq) {
+                        maxFreq = mfft2.magnitudes[i];
+                        maxBin = i;
+                    }
+                }
+            }
+            convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
+            cout << "convOut = " << convolveOut << endl;
+        }
+        
+        //------ FFT AND MFCC CALCULATION ON LIVE AUDIO ------//
         
         wave = lAudioIn[i];
-        //std::cout << "audio = " << wave << endl;
+        
         if (mfft.process(wave)) {
 
         int bins   = fftSize / 2.0;
@@ -322,11 +361,11 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
             mfcc.mfcc(mfft.magnitudes, mfccs);
             // cout << mfft.spectralFlatness() << ", " << mfft.spectralCentroid() << endl;
         }
-        
+
         //-------- SYNTH --------//
         
         // synth object takes arguments boolean for playback and float for amplitude / volume
-        synth1.polySynth(playSynth, 0.5);
+        synth1.polySynth(playSynth, inOut, 0.2);
         
         //-------- LOOPER --------//
         
@@ -342,24 +381,49 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         float ampOut = 0.3;
 
-//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+        //------- ALL STANDARD OUTPUTS -------//
+//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
 //
-//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
 
+        
+        // convolve and live
+        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
+        
+        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
+        
+        
+        // convolved
+//        output[i*nChannels    ] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
+//        output[i*nChannels + 1] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
+        
+        // just synth
+        
+//        output[i*nChannels    ] = synth1.mySynthOutput * ampOut;
+//
+//        output[i*nChannels + 1] = synth1.mySynthOutput * ampOut;
+        
+        
+
+        // all the normal outputs plus SVF taking live audio as input.
         
 //        output[i*nChannels    ] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
 //
 //        output[i*nChannels + 1] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
+        
+        
 
         // live audio feeding into SVF with band pass and notch being controlled by mouse X and Y
         // low pass / band pass / high pass / notch
 //        output[i * nChannels] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
 //
 //        output[i * nChannels + 1] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
-        
-        output[i * nChannels] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseX()) + inOut[i];
 
-        output[i * nChannels + 1] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseY()) + inOut[i];
+        
+        // SVF with synth and loops as inputs
+//        output[i * nChannels] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseX()) + inOut[i];
+//
+//        output[i * nChannels + 1] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseY()) + inOut[i];
     
     }
 }
@@ -449,6 +513,15 @@ void ofApp::keyPressed(int key){
         playLoopNow3 = true;
         playSynth = true;
     }
+    
+    // convolve
+    if (key == 'r'){
+        playSynth = true;
+        convolve = true;
+    } else {
+        playSynth = false;
+        convolve = false;
+    }
 }
 
 //--------------------------------------------------------------
@@ -501,6 +574,10 @@ void ofApp::keyReleased(int key){
         playSynth = false;
     }
     
+    // convolve
+    if (key == 'r'){
+        convolve = false;
+    }
 }
 
 //--------------------------------------------------------------

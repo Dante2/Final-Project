@@ -19,12 +19,15 @@ class synth  {
     int counter;
     bool playMe;
     float volume;
+    double tone;
+    int index;
     
     maxiEnv ADSR[6];
     int currentCount, voice;
-    double pitch[6];
-    maxiOsc VCO1, VCO2, VCO3[6], VCO4[6], myCounter, LFO1, LFO2, LFO3[6];
-    maxiFilter VCF1, VCF2, VCF3[6];
+//    double pitch[6];
+    double pitch[90000];
+    maxiOsc VCO1, VCO2, VCO3[6], VCO4[6], myCounter, LFO1, LFO2, LFO3[6], LFO4[6];
+    maxiFilter VCF1, VCF2, VCF3[6], VCF4[6];
     
 public:
     
@@ -37,7 +40,8 @@ public:
     double mySynthOutput;
     
     // double polySynth(int ticks, int tempo, int index, double signal[], bool play);
-    double polySynth(bool play, double tone, float vol);
+//    double polySynth(bool play, double signal[89000], int audioIndex, float vol);
+    double polySynth(bool play, double signal[89000], float vol);
 };
 
 #endif /* synth_hpp */
