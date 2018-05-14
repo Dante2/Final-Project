@@ -11,6 +11,7 @@
 #include "maxiMFCC.h"
 #include "looper.hpp"
 #include "synth.hpp"
+#include "convolve.hpp"
 
 class ofApp : public ofBaseApp{
     
@@ -53,8 +54,6 @@ public:
     /* inputs */
     float * lAudioIn;
     float * rAudioIn;
-    
-    float * synthIn;
     
     /* buffer size */
     int initialBufferSize;
@@ -114,8 +113,13 @@ public:
     int fftSize;
     int bins, dataSize;
     
-    bool convolve;
-    double convolveOut;
+    bool convolve1Play;
+    
+    // convolvers
+    convolve convolve1, convolve2;
+    
+//    bool convolve2;
+//    double convolveOut;
     
     // MFCC
     maxiMFCC mfcc;

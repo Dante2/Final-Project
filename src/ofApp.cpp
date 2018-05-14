@@ -36,7 +36,7 @@ void ofApp::setup(){
     /* inputs */
     lAudioIn = new float[initialBufferSize];
     rAudioIn = new float[initialBufferSize];
-    synthIn = new float[initialBufferSize];
+    // synthIn = new float[initialBufferSize];
     
     
     // memset?
@@ -51,11 +51,13 @@ void ofApp::setup(){
     
     fftSize = 1024;
     mfft.setup(fftSize, 512, 256);
-    mfft2.setup(fftSize, 512, 256);
-    ifft.setup(fftSize, 512, 256);
+//    mfft2.setup(fftSize, 512, 256);
+//    ifft.setup(fftSize, 512, 256);
     
     nAverages = 12;
     oct.setup(sampleRate, fftSize/2, nAverages);
+    
+    convolve1.setUp(sampleRate, nAverages);
     
     // ------ MFCC ------ //
     
@@ -286,30 +288,30 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         //------ FFT ON SYNTH OUTPUT ------//
         
-        if (convolve){
-            
-            wave2 = synth1.mySynthOutput;
-
-            if (mfft2.process(wave2)) {
-                int bins   = fftSize / 2.0;
-                mfft2.magsToDB();
-                oct.calculate(mfft2.magnitudesDB);
-                float sum = 0;
-                float maxFreq = 0;
-                int maxBin = 0;
-
-                for (int i = 0; i < fftSize/2; i++) {
-                    sum += mfft2.magnitudes[i];
-                    
-                    if (mfft2.magnitudes[i] > maxFreq) {
-                        maxFreq = mfft2.magnitudes[i];
-                        maxBin = i;
-                    }
-                }
-            }
-            convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
-            cout << "convOut = " << convolveOut << endl;
-        }
+//        if (convolve){
+//
+//            wave2 = synth1.mySynthOutput;
+//
+//            if (mfft2.process(wave2)) {
+//                int bins   = fftSize / 2.0;
+//                mfft2.magsToDB();
+//                oct.calculate(mfft2.magnitudesDB);
+//                float sum = 0;
+//                float maxFreq = 0;
+//                int maxBin = 0;
+//
+//                for (int i = 0; i < fftSize/2; i++) {
+//                    sum += mfft2.magnitudes[i];
+//
+//                    if (mfft2.magnitudes[i] > maxFreq) {
+//                        maxFreq = mfft2.magnitudes[i];
+//                        maxBin = i;
+//                    }
+//                }
+//            }
+//            convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
+//            // cout << "convOut = " << convolveOut << endl;
+//        }
         
         //------ FFT AND MFCC CALCULATION ON LIVE AUDIO ------//
         
@@ -378,6 +380,12 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         loop1.playLoop(playLoopNow1);
         loop2.playLoop(playLoopNow2);
         loop3.playLoop(playLoopNow3);
+        
+        // convolve
+        wave2 = synth1.mySynthOutput;
+        // wave is already set to live audio in
+        convolve1.convolving(convolve1Play, wave, wave2);
+//        convolve2.convolving(convolve2, wave2, 1);
 
         float ampOut = 0.3;
 
@@ -388,14 +396,20 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         
         // convolve and live
-        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
-        
-        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
+//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
+//
+//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
         
         
         // convolved
 //        output[i*nChannels    ] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
 //        output[i*nChannels + 1] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
+
+        
+        // convolve with loop
+        output[i*nChannels    ] = convolve1.convolveOut + loop1.myLoopOutput[i];
+        output[i*nChannels + 1] = convolve1.convolveOut + loop1.myLoopOutput[i];
+        
         
         // just synth
         
@@ -517,11 +531,12 @@ void ofApp::keyPressed(int key){
     // convolve
     if (key == 'r'){
         playSynth = true;
-        convolve = true;
+        convolve1Play = true;
     } else {
         playSynth = false;
-        convolve = false;
+        convolve1Play = false;
     }
+    
 }
 
 //--------------------------------------------------------------
@@ -576,7 +591,7 @@ void ofApp::keyReleased(int key){
     
     // convolve
     if (key == 'r'){
-        convolve = false;
+        convolve1Play = false;
     }
 }
 
