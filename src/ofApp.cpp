@@ -56,6 +56,9 @@ void ofApp::setup(){
     
     // ------ SET UP CONVOLVER ------ //
     convolve1.setUp(sampleRate, nAverages, fftSize);
+    convolve2.setUp(sampleRate, nAverages, fftSize);
+    convolve3.setUp(sampleRate, nAverages, fftSize);
+    convolve4.setUp(sampleRate, nAverages, fftSize);
     
     // ------ MFCC ------ //
     
@@ -211,9 +214,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    
-    
-    
+
     float horizWidth = 500.;
     float horizOffset = 100;
     float fftTop = 250;
@@ -279,8 +280,6 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
     for (int i = 0; i < bufferSize; i++){
 
-        //------ FFT AND MFCC ------//
-
         //------ FFT AND MFCC CALCULATION ON LIVE AUDIO ------//
         
         wave = lAudioIn[i];
@@ -345,38 +344,59 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         loop3.recordLoop(88200, i, inOut, recordNow3);
         
         // play loop
-        loop1.playLoop(playLoopNow1);
-        loop2.playLoop(playLoopNow2);
-        loop3.playLoop(playLoopNow3);
+        loop1.playLoop(playLoopNow1, 0.8);
+        loop2.playLoop(playLoopNow2, 0.8);
+        loop3.playLoop(playLoopNow3, 0.8);
         
-        // convolve
+        // convolvers
+        
+        // convolve 1
+        // live input with synth. wave is already set to live audio in
+//        wave2 = synth1.mySynthOutput;
+//        convolve1.convolving(convolvePlay1, wave, wave2);
+        
+        //convolve 2
+        // loops with synth
         wave2 = synth1.mySynthOutput;
-        // wave is already set to live audio in
-        convolve1.convolving(convolve1Play, wave, wave2);
+        double loopConvolve1 = loop1.myLoopOutput[i];
+        double loopConvolve2 = loop2.myLoopOutput[i];
+        double loopConvolve3 = loop3.myLoopOutput[i];
+        
+        convolve1.convolving(convolvePlay1, loopConvolve1, wave2);
+        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
+        convolve3.convolving(convolvePlay3, loopConvolve3, wave2);
 
-        float ampOut = 0.3;
+        //------- ALL LOOPs -------//
+        float ampOut1 = 0.5;
+//        output[i * nChannels] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
+//        output[i * nChannels + 1] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
+        
+        // convolve with loop
+        float ampOut4 = 0.5;
+        output[i * nChannels    ] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut * ampOut4;
+        output[i * nChannels + 1] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut * ampOut4;
 
         //------- ALL STANDARD OUTPUTS -------//
+        
+        //        float ampOut1 = 0.3;
 //        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
 //
 //        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
-
+        
         
         // convolve and live
+        
+//        float ampOut2 = 0.3;
 //        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
 //
 //        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
         
-        
         // convolved
+        
+//          float ampOut3 = 0.3;
 //        output[i*nChannels    ] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
 //        output[i*nChannels + 1] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
 
-        
-        // convolve with loop
-        output[i*nChannels    ] = convolve1.convolveOut + loop1.myLoopOutput[i];
-        output[i*nChannels + 1] = convolve1.convolveOut + loop1.myLoopOutput[i];
-        
         
         // just synth
         
@@ -441,11 +461,12 @@ void ofApp::keyPressed(int key){
         recordNow1 = false;
     }
 
-    if (key == 'w'){
-        playLoopNow1 = true;
-    } else {
-        playLoopNow1 = false;
-    }
+//    if (key == 'w'){
+//        playLoopNow1 = true;
+//        cout << boolalpha << "loop 1 playing = " << playLoopNow1 << endl;
+//    } else {
+//        playLoopNow1 = false;
+//    }
     
     // loop 2
     if (key == 'a'){
@@ -454,11 +475,12 @@ void ofApp::keyPressed(int key){
         recordNow2 = false;
     }
     
-    if (key == 's'){
-        playLoopNow2 = true;
-    } else {
-        playLoopNow2 = false;
-    }
+//    if (key == 's'){
+//        playLoopNow2 = true;
+//        cout << boolalpha << "loop 2 playing = " << playLoopNow2 << endl;
+//    } else {
+//        playLoopNow2 = false;
+//    }
     
     // loop 3
     if (key == 'z'){
@@ -467,18 +489,18 @@ void ofApp::keyPressed(int key){
         recordNow3 = false;
     }
     
-    if (key == 'x'){
-        playLoopNow3 = true;
-    } else {
-        playLoopNow3 = false;
-    }
+//    if (key == 'x'){
+//        playLoopNow3 = true;
+//    } else {
+//        playLoopNow3 = false;
+//    }
     
     // play all loops
-    if (key == 'e'){
-        playLoopNow1 = true;
-        playLoopNow2 = true;
-        playLoopNow3 = true;
-    }
+//    if (key == 'e'){
+//        playLoopNow1 = true;
+//        playLoopNow2 = true;
+//        playLoopNow3 = true;
+//    }
     
     // play synth
     if (key == 'd'){
@@ -488,20 +510,41 @@ void ofApp::keyPressed(int key){
     }
     
     // play everything
-    if (key == 'c'){
+//    if (key == 'c'){
+//        playLoopNow1 = true;
+//        playLoopNow2 = true;
+//        playLoopNow3 = true;
+//        playSynth = true;
+//    }
+    
+    // convolvers
+    
+    // convolve 1
+//    if (key == 'r'){
+//        playSynth = true;
+//        convolvePlay1 = true;
+//    } else {
+//        playSynth = false;
+//        convolvePlay1 = false;
+//    }
+    
+    // convolve 2
+    if (key == 'f'){
         playLoopNow1 = true;
         playLoopNow2 = true;
         playLoopNow3 = true;
+        convolvePlay1 = true;
+        convolvePlay2 = true;
+        convolvePlay3 = true;
         playSynth = true;
-    }
-    
-    // convolve
-    if (key == 'r'){
-        playSynth = true;
-        convolve1Play = true;
     } else {
+        playLoopNow1 = false;
+        playLoopNow2 = false;
+        playLoopNow3 = false;
+        convolvePlay1 = false;
+        convolvePlay2 = false;
+        convolvePlay3 = false;
         playSynth = false;
-        convolve1Play = false;
     }
     
 }
@@ -514,34 +557,34 @@ void ofApp::keyReleased(int key){
         recordNow1 = false;
     }
 
-    if (key == 'w'){
-        playLoopNow1 = false;
-    }
+//    if (key == 'w'){
+//        playLoopNow1 = false;
+//    }
     
     // loop 2
     if (key == 'a'){
         recordNow2 = false;
     }
     
-    if (key == 's'){
-        playLoopNow2 = false;
-    }
+//    if (key == 's'){
+//        playLoopNow2 = false;
+//    }
     
     // loop 3
     if (key == 'z'){
         recordNow3 = false;
     }
     
-    if (key == 'x'){
-        playLoopNow3 = false;
-    }
+//    if (key == 'x'){
+//        playLoopNow3 = false;
+//    }
     
     // all loops
-    if (key == 'e'){
-        playLoopNow1 = false;
-        playLoopNow2 = false;
-        playLoopNow3 = false;
-    }
+//    if (key == 'e'){
+//        playLoopNow1 = false;
+//        playLoopNow2 = false;
+//        playLoopNow3 = false;
+//    }
     
     // stop synth
     if (key == 'd'){
@@ -549,16 +592,30 @@ void ofApp::keyReleased(int key){
     }
     
     // everything
-    if (key == 'c'){
+//    if (key == 'c'){
+//        playLoopNow1 = false;
+//        playLoopNow2 = false;
+//        playLoopNow3 = false;
+//        playSynth = false;
+//    }
+    
+    // convolvers
+    
+    // convolve 1
+//    if (key == 'r'){
+//        convolvePlay1 = false;
+//        playSynth = false;
+//    }
+    
+    // convolve 2
+    if (key == 'f'){
         playLoopNow1 = false;
         playLoopNow2 = false;
         playLoopNow3 = false;
+        convolvePlay1 = false;
+        convolvePlay2 = false;
+        convolvePlay3 = false;
         playSynth = false;
-    }
-    
-    // convolve
-    if (key == 'r'){
-        convolve1Play = false;
     }
 }
 

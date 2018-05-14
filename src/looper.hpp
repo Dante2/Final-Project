@@ -19,12 +19,13 @@ class looper  {
     double myLoop[89000];
     int counterPlay = 0;
     bool loopPlay = false;
+    double volume = 0.0;
     int index;
     
     public:
     double myLoopOutput[512];
     double recordLoop(int loopLength, int audioIndex, double signal[89000], bool recording);
-    double playLoop(bool playing);
+    double playLoop(bool playing, double vol);
     
 };
 

@@ -15,7 +15,7 @@
 class convolve  {
     
     ofxMaxiIFFT ifft;
-    ofxMaxiFFT mfft, mfft2;
+    ofxMaxiFFT mfft1, mfft2;
     ofxMaxiFFTOctaveAnalyzer oct;
     int bins, dataSize, averaged, sized, rated, fftSize;
     double waveIn, waveIn2, fftconv1, fftconv2;

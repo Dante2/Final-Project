@@ -12,7 +12,7 @@ void convolve::setUp(int rateIn, int averages, int size){
     sized = size;
     rated = rateIn;
     averaged = averages;
-    mfft.setup(sized, 512, 256);
+    mfft1.setup(sized, 512, 256);
     mfft2.setup(sized, 512, 256);
     ifft.setup(sized, 512, 256);
     oct.setup(rated, sized/2, averages);
@@ -27,17 +27,17 @@ double convolve::convolving(bool play, double signal, double signal2){
         waveIn = signal;
         waveIn2 = signal2;
 
-        if (mfft.process(waveIn)) {
+        if (mfft1.process(waveIn)) {
             int bins   = fftSize / 2.0;
-            mfft.magsToDB();
-            oct.calculate(mfft.magnitudesDB);
+            mfft1.magsToDB();
+            oct.calculate(mfft1.magnitudesDB);
             float sum = 0;
             float maxFreq = 0;
             int maxBin = 0;
             for (int i = 0; i < fftSize/2; i++) {
-                sum += mfft.magnitudes[i];
-                if (mfft.magnitudes[i] > maxFreq) {
-                    maxFreq = mfft.magnitudes[i];
+                sum += mfft1.magnitudes[i];
+                if (mfft1.magnitudes[i] > maxFreq) {
+                    maxFreq = mfft1.magnitudes[i];
                     maxBin = i;
                 }
             }
@@ -58,7 +58,6 @@ double convolve::convolving(bool play, double signal, double signal2){
                 }
             }
         }
-        convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
-        // cout << "convOut = " << convolveOut << endl;
+        convolveOut = ifft.process(mfft1.magnitudes, mfft2.phases);
     }
 }

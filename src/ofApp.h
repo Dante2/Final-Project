@@ -46,10 +46,14 @@ public:
     double inOut[512];
     
     //------ EFFECTS RACK ------//
+    
     // delay ----
     maxiDelayline myFace;
     
-    // float * output;
+    // filter //
+    maxiSVF myVarFilter;
+    
+    // ---------- //
     
     /* inputs */
     float * lAudioIn;
@@ -60,20 +64,11 @@ public:
     int sampleRate;
     
     //--------- SYNTH ----------//
-    maxiClock myClock;
-    maxiEnv ADSR[6];
-    double synthMix;
-    int currentCount, voice;
-    double pitch[6];
-    maxiOsc VCO1, VCO2, VCO3[6], VCO4[6], myCounter, LFO1, LFO2, LFO3[6];
-    double VCO1out, VCO2out, VCO3out[6], VCO4out[6], LFO1out, LFO2out, LFO3out[6];
-    double VCF1out, VCF2out, VCF3out[6];
-    double ADSRout[6];
+//    maxiClock myClock;
     maxiFilter VCF1, VCF2, VCF3[6];
     
-    bool playSynth;
-    
     synth synth1;
+    bool playSynth;
     
     /* Looper */
 
@@ -96,36 +91,28 @@ public:
     //MAXIMILIAN STUFF:
     double wave, wave2, sample, outputs[2], ifftVal;
     
-    // Pitch recognition??
+    // FFT
     ofxMaxiFFTOctaveAnalyzer oct;
     int nAverages;
-    float *ifftOutput;
+    float * ifftOutput;
     int ifftSize;
+    ofxMaxiFFT mfft;
+    int fftSize;
+    int bins, dataSize;
+//    ofxMaxiIFFT ifft;
     
     // data retrieval options
     float peakFreq = 0;
     float centroid = 0;
     float RMS = 0;
     
-    // FFT
-    ofxMaxiIFFT ifft;
-    ofxMaxiFFT mfft, mfft2;
-    int fftSize;
-    int bins, dataSize;
-    
-    bool convolve1Play;
-    
     // convolvers
-    convolve convolve1, convolve2;
-    
-//    bool convolve2;
-//    double convolveOut;
+    convolve convolve1, convolve2, convolve3, convolve4;
+    bool convolvePlay1, convolvePlay2, convolvePlay3, convolvePlay4;
     
     // MFCC
     maxiMFCC mfcc;
     double *mfccs;
-    
-    // maxiSample samp;
     
     // GUI STUFF
     bool bHide;
@@ -138,16 +125,9 @@ public:
     ofxToggle rmsToggle;
     
     ofxPanel gui;
-    
-    //ofTrueTypeFont myFont, myFont2;
 
     // soundstream
     ofSoundStream audioStream;
-    
-    
-
-    // ----- OSC ------ //
-    // Needs to go into a class of its own
     
     // ----- SEND ----- //
     // ofxOscSender object
@@ -182,9 +162,6 @@ public:
     float emg = 0;
     float gyro = 0;
     float quaternion = 0;
-    
-    maxiSVF myVarFilter;
-  
 };
 
 #endif

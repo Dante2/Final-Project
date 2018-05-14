@@ -28,10 +28,10 @@ double synth::polySynth(bool play, double signal[], float vol){
     synthClock.setTempo(90);
 
         for (int i = 0; i < 6; i++) {
-            ADSR[i].setAttack(200);
+            ADSR[i].setAttack(2000);
             ADSR[i].setDecay(200);
             ADSR[i].setSustain(50);
-            ADSR[i].setRelease(30);
+            ADSR[i].setRelease(3000);
         }
 
         synthMix = 0;
