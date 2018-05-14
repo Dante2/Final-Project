@@ -51,13 +51,11 @@ void ofApp::setup(){
     
     fftSize = 1024;
     mfft.setup(fftSize, 512, 256);
-//    mfft2.setup(fftSize, 512, 256);
-//    ifft.setup(fftSize, 512, 256);
-    
     nAverages = 12;
     oct.setup(sampleRate, fftSize/2, nAverages);
     
-    convolve1.setUp(sampleRate, nAverages);
+    // ------ SET UP CONVOLVER ------ //
+    convolve1.setUp(sampleRate, nAverages, fftSize);
     
     // ------ MFCC ------ //
     
@@ -282,37 +280,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
     for (int i = 0; i < bufferSize; i++){
 
         //------ FFT AND MFCC ------//
-        
-//        wave2 = synth1.mySynthOutput;
-//        cout << "wave2 = " << wave2 << endl;
-        
-        //------ FFT ON SYNTH OUTPUT ------//
-        
-//        if (convolve){
-//
-//            wave2 = synth1.mySynthOutput;
-//
-//            if (mfft2.process(wave2)) {
-//                int bins   = fftSize / 2.0;
-//                mfft2.magsToDB();
-//                oct.calculate(mfft2.magnitudesDB);
-//                float sum = 0;
-//                float maxFreq = 0;
-//                int maxBin = 0;
-//
-//                for (int i = 0; i < fftSize/2; i++) {
-//                    sum += mfft2.magnitudes[i];
-//
-//                    if (mfft2.magnitudes[i] > maxFreq) {
-//                        maxFreq = mfft2.magnitudes[i];
-//                        maxBin = i;
-//                    }
-//                }
-//            }
-//            convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
-//            // cout << "convOut = " << convolveOut << endl;
-//        }
-        
+
         //------ FFT AND MFCC CALCULATION ON LIVE AUDIO ------//
         
         wave = lAudioIn[i];
@@ -385,7 +353,6 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         wave2 = synth1.mySynthOutput;
         // wave is already set to live audio in
         convolve1.convolving(convolve1Play, wave, wave2);
-//        convolve2.convolving(convolve2, wave2, 1);
 
         float ampOut = 0.3;
 

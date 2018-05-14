@@ -7,15 +7,15 @@
 
 #include "convolve.hpp"
 
-void convolve::setUp(int rateIn, int averages){
+void convolve::setUp(int rateIn, int averages, int size){
     
-    int rated = rateIn;
-    int averaged = averages;
-    fftSize = 1024;
-    mfft.setup(fftSize, 512, 256);
-    mfft2.setup(fftSize, 512, 256);
-    ifft.setup(fftSize, 512, 256);
-    oct.setup(rated, fftSize/2, averages);
+    sized = size;
+    rated = rateIn;
+    averaged = averages;
+    mfft.setup(sized, 512, 256);
+    mfft2.setup(sized, 512, 256);
+    ifft.setup(sized, 512, 256);
+    oct.setup(rated, sized/2, averages);
     
 }
 
@@ -62,11 +62,3 @@ double convolve::convolving(bool play, double signal, double signal2){
         // cout << "convOut = " << convolveOut << endl;
     }
 }
-
-//double convolve::convolveOut( double mags, double phase){
-//
-//    double magnitudes = mags;
-//    double phases = phase;
-//    
-//    ifft.process(mfft.magnitudes, mfft.phases);
-

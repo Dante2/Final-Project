@@ -17,14 +17,13 @@ class convolve  {
     ofxMaxiIFFT ifft;
     ofxMaxiFFT mfft, mfft2;
     ofxMaxiFFTOctaveAnalyzer oct;
-    int fftSize;
-    int bins, dataSize;
+    int bins, dataSize, averaged, sized, rated, fftSize;
     double waveIn, waveIn2, fftconv1, fftconv2;
     bool convolve;
  
 public:
     
-    void setUp(int rateIn, int averages);
+    void setUp(int rateIn, int averages, int size);
     double convolving(bool play, double signal, double signal2);
     double convolveOut;
     
