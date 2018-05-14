@@ -21,6 +21,7 @@ class looper  {
     bool loopPlay = false;
     double volume = 0.0;
     int index;
+    int loopRecorded = 0;
     
     public:
     double myLoopOutput[512];

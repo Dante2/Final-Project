@@ -288,7 +288,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         int bins   = fftSize / 2.0;
         //do some manipulation
-        int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+        // int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
         //highpass
         //                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
         //                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
@@ -339,14 +339,14 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //-------- LOOPER --------//
         
         // record loop
-        loop1.recordLoop(88200, i, inOut, recordNow1);
-        loop2.recordLoop(88200, i, inOut, recordNow2);
-        loop3.recordLoop(88200, i, inOut, recordNow3);
+        loop1.recordLoop(44100 * 5, i, inOut, recordNow1);
+//        loop2.recordLoop(44100 * 20, i, inOut, recordNow2);
+//        loop3.recordLoop(44100 * 20, i, inOut, recordNow3);
         
         // play loop
         loop1.playLoop(playLoopNow1, 0.8);
-        loop2.playLoop(playLoopNow2, 0.8);
-        loop3.playLoop(playLoopNow3, 0.8);
+//        loop2.playLoop(playLoopNow2, 0.8);
+//        loop3.playLoop(playLoopNow3, 0.8);
         
         // convolvers
         
