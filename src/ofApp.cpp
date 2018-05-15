@@ -339,7 +339,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //-------- LOOPER --------//
         
         // record loop
-        loop1.recordLoop(88200, i, inOut, recordNow1);
+        loop1.recordLoop(44100 * 20, i, inOut, recordNow1);
 //        loop2.recordLoop(44100 * 20, i, inOut, recordNow2);
 //        loop3.recordLoop(44100 * 20, i, inOut, recordNow3);
         

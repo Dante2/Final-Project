@@ -17,17 +17,18 @@
 class looper  {
     
     int counterRecord = 0;
-    int loopLengthInSamples = 88200;
+    int loopLengthInSamples = 882100;
     bool loopRecord = false;
-    double myLoop[89000];
+    double myLoop[882200];
     int counterPlay = 0;
     bool loopPlay = false;
     int index;
     
 public:
-    double myLoopOutput[512];
-    double recordLoop(int loopLength, int audioIndex, double signal[89000], bool recording);
+    double myLoopOutput[520];
+    double recordLoop(int loopLength, int audioIndex, double signal[44200], bool recording);
     double playLoop(bool playing);
+    int loopTracker;
     //    void triggerRecord();
     
 };

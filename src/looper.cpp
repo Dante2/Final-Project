@@ -21,14 +21,15 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
     loopRecord = recording;
     if (loopRecord == true) {
         counterRecord ++;
+        loopTracker = counterRecord;
         // cout << "loop counter = " << counterRecord << endl;
         if (counterRecord > loopLengthInSamples) {
             counterRecord = 0;
         }
         myLoop[counterRecord] = signal[index];
         myLoop[counterRecord + 1] = signal[index + 1];
-        //        cout << "loop recorded L = " << myLoop[counterRecord] << endl;
-        //        cout << "loop recorded R = " << myLoop[counterRecord + 1] << endl;
+//        cout << "loop recorded L = " << myLoop[counterRecord] << endl;
+//        cout << "loop recorded R = " << myLoop[counterRecord + 1] << endl;
     } else if (loopRecord == false){
         counterRecord = 0;
     }
@@ -40,7 +41,8 @@ double looper::playLoop(bool playing){
     loopPlay = playing;
     if (loopPlay == true){
         counterPlay ++;
-        if (counterPlay > loopLengthInSamples) {
+//        cout << "counterPlay = " << counterPlay << endl;
+        if (counterPlay > loopTracker) {
             counterPlay = 0;
         }
         myLoopOutput[index] = myLoop[counterPlay];
