@@ -334,7 +334,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //-------- SYNTH --------//
         
         // synth object takes arguments boolean for playback and float for amplitude / volume
-        synth1.polySynth(playSynth, inOut, 0.2);
+        synth1.polySynth(playSynth, inOut, 0.8);
         
         //-------- LOOPER --------//
         
@@ -359,22 +359,23 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         // loops with synth
         wave2 = synth1.mySynthOutput;
         double loopConvolve1 = loop1.myLoopOutput[i];
-        double loopConvolve2 = loop2.myLoopOutput[i];
-        double loopConvolve3 = loop3.myLoopOutput[i];
+//        double loopConvolve2 = loop2.myLoopOutput[i];
+//        double loopConvolve3 = loop3.myLoopOutput[i];
         
         convolve1.convolving(convolvePlay1, loopConvolve1, wave2);
-        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
-        convolve3.convolving(convolvePlay3, loopConvolve3, wave2);
+//        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
+//        convolve3.convolving(convolvePlay3, loopConvolve3, wave2);
 
         //------- ALL LOOPs -------//
-        float ampOut1 = 0.5;
+        // float ampOut1 = 0.5;
 //        output[i * nChannels] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
 //        output[i * nChannels + 1] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
         
         // convolve with loop
         float ampOut4 = 0.5;
-        output[i * nChannels    ] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut * ampOut4;
-        output[i * nChannels + 1] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut * ampOut4;
+        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + convolve1.convolveOut * ampOut4;
+        
+        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + convolve1.convolveOut * ampOut4;
 
         //------- ALL STANDARD OUTPUTS -------//
         
@@ -457,42 +458,28 @@ void ofApp::keyPressed(int key){
     // loop 1
     if (key == 'q'){
         recordNow1 = true;
-    } else {
-        recordNow1 = false;
     }
 
 //    if (key == 'w'){
 //        playLoopNow1 = true;
-//        cout << boolalpha << "loop 1 playing = " << playLoopNow1 << endl;
-//    } else {
-//        playLoopNow1 = false;
 //    }
     
     // loop 2
     if (key == 'a'){
         recordNow2 = true;
-    } else {
-        recordNow2 = false;
     }
     
 //    if (key == 's'){
 //        playLoopNow2 = true;
-//        cout << boolalpha << "loop 2 playing = " << playLoopNow2 << endl;
-//    } else {
-//        playLoopNow2 = false;
 //    }
     
     // loop 3
     if (key == 'z'){
         recordNow3 = true;
-    } else {
-        recordNow3 = false;
     }
     
 //    if (key == 'x'){
 //        playLoopNow3 = true;
-//    } else {
-//        playLoopNow3 = false;
 //    }
     
     // play all loops
@@ -505,8 +492,6 @@ void ofApp::keyPressed(int key){
     // play synth
     if (key == 'd'){
         playSynth = true;
-    } else {
-        playSynth = false;
     }
     
     // play everything
@@ -537,16 +522,7 @@ void ofApp::keyPressed(int key){
         convolvePlay2 = true;
         convolvePlay3 = true;
         playSynth = true;
-    } else {
-        playLoopNow1 = false;
-        playLoopNow2 = false;
-        playLoopNow3 = false;
-        convolvePlay1 = false;
-        convolvePlay2 = false;
-        convolvePlay3 = false;
-        playSynth = false;
     }
-    
 }
 
 //--------------------------------------------------------------

@@ -36,20 +36,20 @@ using std::boolalpha;
 //
 ////-------- PLAY LOOP --------//
 //
-//double looper::playLoop(bool playing, double vol){
-//    volume = vol;
-//    loopPlay = playing;
-//    if (loopPlay == true){
-//        counterPlay ++;
-//        if (counterPlay > loopLengthInSamples) {
-//            counterPlay = 0;
-//        }
-//        myLoopOutput[index] = myLoop[counterPlay] * volume;
-//        // cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
-//    } else if (loopPlay == false){
-//        counterPlay = 0;
-//    }
-//}
+double looper::playLoop(bool playing, double vol){
+    volume = vol;
+    loopPlay = playing;
+    if (loopPlay == true){
+        counterPlay ++;
+        if (counterPlay > loopLengthInSamples) {
+            counterPlay = 0;
+        }
+        myLoopOutput[index] = myLoop[counterPlay] * volume;
+        // cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
+    } else if (loopPlay == false){
+        counterPlay = 0;
+    }
+}
 
 
 double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool recording){
@@ -82,48 +82,26 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
 
 //-------- PLAY LOOP --------//
 
-double looper::playLoop(bool playing, double vol){
-    volume = vol;
-    loopPlay = playing;
-    while (loopPlay == true){
-//        cout << boolalpha << "looPlay = " << loopPlay << endl;
-        counterPlay ++;
-        cout << "counterPlay = " << counterPlay << endl;
-        
-//        if (counterPlay < loopTracker2) {
+//double looper::playLoop(bool playing, double vol){
+//    volume = vol;
+//    loopPlay = playing;
+//    while (loopPlay == true){
+////        cout << boolalpha << "looPlay = " << loopPlay << endl;
 //        counterPlay ++;
-        
-//            }
+//        cout << "counterPlay = " << counterPlay << endl;
+//        
+////        if (counterPlay < loopTracker2) {
+////        counterPlay ++;
+//        
+////            }
+////
+//        if (counterPlay > loopTracker2) {
+//            counterPlay = 0;
+//        }
 //
-        if (counterPlay > loopTracker2) {
-            counterPlay = 0;
-        }
-
-        myLoopOutput[index] = myLoop[counterPlay] * volume;
-        myLoopOutput[index + 1] = myLoop[counterPlay] * volume;
-    } else if (loopPlay == false){
-        counterPlay = 0;
-    }
-}
-
-//if (currentPosition > loopLength) {
-//
-//    (play back your stuff.)
-//
-//} else {
-//
-//    currentPosition = 0;
-//
+//        myLoopOutput[index] = myLoop[counterPlay] * volume;
+//        myLoopOutput[index + 1] = myLoop[counterPlay] * volume;
+//    } else if (loopPlay == false){
+//        counterPlay = 0;
+//    }
 //}
-//
-//
-//if (currentPosition < loopLength) {qqqqqqqqq
-//
-//    (play back your stuff.)
-//
-//} else {
-//
-//    currentPosition = 0;
-//
-//}
-
