@@ -132,8 +132,8 @@ void ofApp::setup(){
     
     // ----- variable filter ------ //
     
-    myVarFilter.setCutoff(1000);
-    myVarFilter.setResonance(0.2);
+//    myVarFilter.setCutoff(1000);
+//    myVarFilter.setResonance(0.2);
 }
 
 //--------------------------------------------------------------
@@ -339,7 +339,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         //-------- LOOPER --------//
         
         // record loop
-        loop1.recordLoop(44100 * 5, i, inOut, recordNow1);
+        loop1.recordLoop(44100, i, inOut, recordNow1);
 //        loop2.recordLoop(44100 * 20, i, inOut, recordNow2);
 //        loop3.recordLoop(44100 * 20, i, inOut, recordNow3);
         

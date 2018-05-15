@@ -58,9 +58,11 @@ double looper::playLoop(bool playing, double vol){
 //    loopLengthInSamples = loopLength;
 //    loopRecord = recording;
 //    if (loopRecord == true) {
+//
+//
 //        counterRecord ++;
 //        loopRecorded = counterRecord;
-//        cout << "loop length = " << loopRecorded << endl;
+//
 //
 //        if (counterRecord > loopLengthInSamples) {
 //            counterRecord = 0;

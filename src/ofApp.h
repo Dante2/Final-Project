@@ -51,7 +51,7 @@ public:
     maxiDelayline myFace;
     
     // filter //
-    maxiSVF myVarFilter;
+//    maxiSVF myVarFilter;
     
     // ---------- //
     
