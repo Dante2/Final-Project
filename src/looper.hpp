@@ -14,7 +14,7 @@
 class looper  {
 
     int counterRecord = 0;
-    int loopLengthInSamples = 44200;
+    int loopLengthInSamples = 882200;
     bool loopRecord = false;
     double myLoop[882500];
     int counterPlay = 0;
@@ -22,6 +22,8 @@ class looper  {
     double volume = 0.0;
     int index;
     int loopRecorded = 0;
+    int loopTracker = 0;
+    int loopTracker2 = 0;
     
     public:
     double myLoopOutput[520];
