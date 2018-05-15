@@ -167,6 +167,7 @@ public:
     // bool liveIn = false;
     bool allBasic = false;
     bool convolveOutput = false;
+    bool loop1Out = true;
     
 };
 

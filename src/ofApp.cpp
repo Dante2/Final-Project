@@ -365,16 +365,20 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         convolve1.convolving(convolvePlay1, loopConvolve1, wave2);
 //        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
 //        convolve3.convolving(convolvePlay3, loopConvolve3, wave2);
-
-        //------- ALL LOOPs -------//
-        // float ampOut1 = 0.5;
-//        output[i * nChannels] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
-//        output[i * nChannels + 1] = loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
+        
+        // ------ OUTPUTS ------- //
         
         // live in
         float ampOut = 0.5;
         output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut;
         output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
+        
+        // live in and loop 1
+        if (loop1Out){
+        float ampOut1 = 0.5;
+        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut1;
+        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut1;
+        }
         
         // convolve / loop / live in / synth
         if (allBasic){
@@ -474,6 +478,7 @@ void ofApp::keyPressed(int key){
     }
     if (key == 'w'){
         playLoopNow1 = true;
+        loop1Out = true;
     }
     
     // loop 2
