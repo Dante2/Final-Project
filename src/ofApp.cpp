@@ -338,15 +338,17 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         //-------- LOOPER --------//
         
-        // record loop
+        // record main loop. The length of this sets the length of all other loops
         loop1.recordLoop(44100 * 20, i, inOut, recordNow1);
-//        loop2.recordLoop(44100 * 20, i, inOut, recordNow2);
-//        loop3.recordLoop(44100 * 20, i, inOut, recordNow3);
+        
+        // slave loops. Length of which is set dynamically by first loop
+        loop2.recordLoop(44100 * 20, i, inOut, recordNow2, loop1.loopTracker);
+        loop3.recordLoop(44100 * 20, i, inOut, recordNow3, loop1.loopTracker);
         
         // play loop
         loop1.playLoop(playLoopNow1);
-//        loop2.playLoop(playLoopNow2, 0.8);
-//        loop3.playLoop(playLoopNow3, 0.8);
+        loop2.playLoop(playLoopNow2);
+        loop3.playLoop(playLoopNow3);
         
         // convolvers
         
@@ -373,16 +375,16 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut;
         output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
         
-        // live in and loop 1
-        if (loop1Out){
+        // live in and loops
+        if (loopsOut){
         float ampOut1 = 0.5;
-        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut1;
-        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] * ampOut1;
+        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
+        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
         }
         
-        // convolve / loop / live in / synth
+        // loop / live in / synth
         if (allBasic){
-        float ampOut2 = 0.5;
+        float ampOut2 = 0.3;
         output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] * ampOut2;
         output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] * ampOut2;
         }
@@ -478,17 +480,17 @@ void ofApp::keyPressed(int key){
     }
     if (key == 'w'){
         playLoopNow1 = true;
-        loop1Out = true;
+        loopsOut = true;
     }
     
     // loop 2
-//    if (key == 'a'){
-//        recordNow2 = true;
-//    }
-    
-//    if (key == 's'){
-//        playLoopNow2 = true;
-//    }
+    if (key == 'a'){
+        recordNow2 = true;
+    }
+    if (key == 's'){
+        playLoopNow2 = true;
+        loopsOut = true;
+    }
     
     // loop 3
 //    if (key == 'z'){
@@ -558,11 +560,10 @@ void ofApp::keyReleased(int key){
     // loop 2
     if (key == 'a'){
         recordNow2 = false;
+    }    
+    if (key == 's'){
+        playLoopNow2 = false;
     }
-    
-//    if (key == 's'){
-//        playLoopNow2 = false;
-//    }
     
     // loop 3
     if (key == 'z'){

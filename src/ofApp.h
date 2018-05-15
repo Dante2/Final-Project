@@ -10,6 +10,7 @@
 //#include "ofxMyo.h"
 #include "maxiMFCC.h"
 #include "looper.hpp"
+#include "slaveLoop.hpp"
 #include "synth.hpp"
 #include "convolve.hpp"
 
@@ -73,7 +74,8 @@ public:
     /* Looper */
 
     // loops
-    looper loop1, loop2, loop3;
+    looper loop1;
+    slaveLoop loop2, loop3;
     
     // triggers for each loops' functionalities
     // loop1
@@ -167,7 +169,7 @@ public:
     // bool liveIn = false;
     bool allBasic = false;
     bool convolveOutput = false;
-    bool loop1Out = true;
+    bool loopsOut = true;
     
 };
 

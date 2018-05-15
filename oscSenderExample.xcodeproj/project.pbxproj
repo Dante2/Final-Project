@@ -29,6 +29,7 @@
 		54C381142041A72200B50DAC /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54C381052041A72200B50DAC /* ofxLabel.cpp */; };
 		54C381152041A72200B50DAC /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54C3810C2041A72200B50DAC /* ofxPanel.cpp */; };
 		54C381162041A72200B50DAC /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54C3810D2041A72200B50DAC /* ofxSlider.cpp */; };
+		54CD8FD820AB85F7006E53D9 /* slaveLoop.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 54CD8FD620AB85F7006E53D9 /* slaveLoop.cpp */; };
 		5864AD82E20F15536D054EA3 /* ofxOscMessage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DF49D76C45D5DB505A234880 /* ofxOscMessage.cpp */; };
 		62545D179C94265CA1389D4A /* OscOutboundPacketStream.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 63A47AC60FFAFC3BF093EC0F /* OscOutboundPacketStream.cpp */; };
 		640279EE111671BD026CB013 /* ofxOscReceiver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C2FAC65C491D4231379F3298 /* ofxOscReceiver.cpp */; };
@@ -125,6 +126,8 @@
 		54C3810C2041A72200B50DAC /* ofxPanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxPanel.cpp; sourceTree = "<group>"; };
 		54C3810D2041A72200B50DAC /* ofxSlider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofxSlider.cpp; sourceTree = "<group>"; };
 		54C3810E2041A72200B50DAC /* ofxPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofxPanel.h; sourceTree = "<group>"; };
+		54CD8FD620AB85F7006E53D9 /* slaveLoop.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = slaveLoop.cpp; sourceTree = "<group>"; };
+		54CD8FD720AB85F7006E53D9 /* slaveLoop.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = slaveLoop.hpp; sourceTree = "<group>"; };
 		63A47AC60FFAFC3BF093EC0F /* OscOutboundPacketStream.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = OscOutboundPacketStream.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscOutboundPacketStream.cpp; sourceTree = SOURCE_ROOT; };
 		65EEFA3DA3526E9CDD9C21F9 /* ofxOscBundle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxOscBundle.cpp; path = ../../../addons/ofxOsc/src/ofxOscBundle.cpp; sourceTree = SOURCE_ROOT; };
 		6B65E6930994CC4B2D2B8B33 /* OscPacketListener.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = OscPacketListener.h; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscPacketListener.h; sourceTree = SOURCE_ROOT; };
@@ -365,6 +368,8 @@
 				5432C07E209C6AFC00C27DB4 /* synth.hpp */,
 				5477C23120A977BE00FDDF0E /* convolve.cpp */,
 				5477C23220A977BE00FDDF0E /* convolve.hpp */,
+				54CD8FD620AB85F7006E53D9 /* slaveLoop.cpp */,
+				54CD8FD720AB85F7006E53D9 /* slaveLoop.hpp */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -489,6 +494,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				54CD8FD820AB85F7006E53D9 /* slaveLoop.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				72A929D3561B8232A182ABFC /* ofxOscBundle.cpp in Sources */,
 				54A335AF203D9F0F00C32070 /* maxiFFT.cpp in Sources */,
