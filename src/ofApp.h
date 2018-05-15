@@ -162,6 +162,12 @@ public:
     float emg = 0;
     float gyro = 0;
     float quaternion = 0;
+    
+    // ------ output controls ------ //
+    // bool liveIn = false;
+    bool allBasic = false;
+    bool convolveOutput = false;
+    
 };
 
 #endif
