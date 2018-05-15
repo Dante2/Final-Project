@@ -54,28 +54,21 @@ using std::boolalpha;
 
 double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool recording){
     index = audioIndex;
-    // cout << "record index = " << index << endl;
     loopLengthInSamples = loopLength;
     loopRecord = recording;
     if (loopRecord == true) {
-
-
+        cout << "loop tracker 2 pre = " << loopTracker2 << endl;
         counterRecord ++;
-
-        //if (counterRecord ++){
-
+//        if (counterRecord ++){
             for (int i = 0; i < 44100; i++){
                 loopTracker = i;
                 cout << "loop tracker = " << loopTracker << endl;
-                        if (loopTracker == 44099){
-                            loopTracker2 += 1;
-                            cout << "loop tracker2 = " << loopTracker2 << endl;
-                        }
+                if (loopTracker == 44099){
+                    loopTracker2 ++;
+                    cout << "loop tracker 2 post = " << loopTracker2 << endl;
+//                }
+                }
             }
-        //}
-
-//        cout << "loop tracker total = " << loopTracker2 << endl;
-
         if (counterRecord > loopLengthInSamples) {
             counterRecord = 0;
         }
@@ -83,6 +76,7 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
         myLoop[counterRecord + 1] = signal[index + 1];
     } else if (loopRecord == false){
         counterRecord = 0;
+        loopTracker2 = 0;
     }
 }
 
