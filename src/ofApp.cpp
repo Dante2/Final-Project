@@ -333,17 +333,55 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         //-------- SYNTH --------//
         
-        
-//        voiceControl = LFO1.sinebuf(2 * ofGetMouseY());
+//        LFO1.sinebuf(100 * ofGetMouseY())
+
+        // key t
+        // change number of voices in synths
+//        voiceControl = 1;
+//        if (voiceChange1){
+//            voiceChange = voiceChange1;
+//            voiceControl * 1.5;
+//        } else if (voiceChange1 == false) {
+//            voiceChange = voiceChange1;
+//            voiceControl = 1;
+//        }
+//
+//        if (voiceChange2){
+//            voiceChange = voiceChange2;
+//            voiceControl * 3;
+//        } else if (voiceChange2 == false) {
+//            voiceControl = 1;
+//            voiceChange = voiceChange2;
+//        }
 
         voiceControl = 1;
+        if (voiceChange1){
+            voiceChange = voiceChange1;
+            voiceControl * 1.5;
+        } else if (voiceChange1 == false) {
+            voiceChange = voiceChange1;
+            voiceControl = 1;
+        }
+        
+//        } else
+        
+//            if (voiceChange2){
+//            voiceChange = voiceChange2;
+//            voiceControl * 0.5;
+
+            
+//        } else if (voiceChange2 == false) {
+//            voiceControl = 1;
+//            voiceChange = voiceChange2;
+//        }
+        
         
         // synth object takes arguments boolean for playback, float for volume, ints for ADSR respectvely, int for ticks, int for tempo, int for voices
-        synth1.polySynth(playSynth, 0.8, 200, 200, 50, 160, 2, 60, 6 * voiceControl);
-//        synth2.polySynth(playSynth, 0.2, 100, 50, 100, 450, 1, 60, 3 * voiceControl);
-//        synth3.polySynth(playSynth, 0.2, 500, 60, 300, 3000, 1, 60, 2 * voiceControl);
-//        synth4.polySynth(playSynth, 0.2, 50, 30, 500, 750, 1, 60, 3 * voiceControl);
-//        synth5.polySynth(playSynth, 0.2, 20, 60, 750, 50, 2, 60, 6 * voiceControl);
+        synth1.polySynth(playSynth, 0.2, 200, 200, 50, 160, 2, 60, 6 * voiceControl, voiceChange);
+        synth2.polySynth(playSynth, 0.2, 100, 50, 100, 450, 3, 60, 4 * voiceControl, voiceChange);
+        synth3.polySynth(playSynth, 0.2, 500, 60, 300, 3000, 1, 60, 3 * voiceControl, voiceChange);
+        synth4.polySynth(playSynth, 0.2, 50, 30, 500, 750, 2, 90, 4 * voiceControl, voiceChange);
+        synth5.polySynth(playSynth, 0.8, 20, 60, 750, 100, 4, 120, 6 * voiceControl, voiceChange);
         
         //-------- LOOPER --------//
         
@@ -511,10 +549,10 @@ void ofApp::keyPressed(int key){
 //        loopsOut = true;
 //    }
 
-    // play synth
-    if (key == 'd'){
-        playSynth = true;
-    }
+//    // play synth
+//    if (key == 'd'){
+//        playSynth = true;
+//    }
     
     // play everything
     if (key == 'c'){
@@ -547,6 +585,15 @@ void ofApp::keyPressed(int key){
         playSynth = true;
         convolveOutput = true;
         loopsOut = false;
+    }
+    
+    // synth voice
+    if (key == 't'){
+        voiceChange1 = true;
+    }
+    
+    if (key == 'g'){
+        voiceChange2 = true;
     }
 }
 
@@ -590,10 +637,10 @@ void ofApp::keyReleased(int key){
 //        loopsOut = false;
 //    }
     
-    // stop synth
-    if (key == 'd'){
-        playSynth = false;
-    }
+//    // stop synth
+//    if (key == 'd'){
+//        playSynth = false;
+//    }
     
     // everything
     if (key == 'c'){
@@ -623,6 +670,14 @@ void ofApp::keyReleased(int key){
         playSynth = false;
         convolveOutput = false;
         loopsOut = true;
+    }
+    
+    // synth voice control
+    if (key == 't'){
+        voiceChange1 = false;
+    }
+    if (key == 'g'){
+        voiceChange2 = false;
     }
 }
 

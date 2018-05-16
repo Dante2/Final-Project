@@ -12,13 +12,14 @@ using std::endl;
 using std::cin;
 using std::boolalpha;
 
-double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ticks, int tempo, int voices){
+double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ticks, int tempo, int voices, bool vChange){
 
     ticky = ticks;
     BPM = tempo;
     playMe = play;
     volume = vol;
-    voice = voices;
+    voicey = voices;
+    changeUp = vChange;
     int a = A;
     int d = D;
     int s = S;
@@ -30,7 +31,7 @@ double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ti
     synthClock.setTicksPerBeat(ticky);
     synthClock.setTempo(BPM);
 
-        for (int i = 0; i < voice; i++) {
+        for (int i = 0; i < voicey; i++) {
             ADSR[i].setAttack(a);
             ADSR[i].setDecay(d);
             ADSR[i].setSustain(s);
@@ -41,7 +42,10 @@ double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ti
 
         synthClock.ticker();
         if (synthClock.tick) {
-            if (voice == 6) {
+            if (voice == voicey) {
+                voice = 0;
+                }
+            if (changeUp == false){
                 voice = 0;
             }
 
@@ -53,7 +57,7 @@ double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ti
 
     //--- oscillators ---//
 
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < voicey; i++) {
             ADSRout[i] = ADSR[i].adsr(1., ADSR[i].trigger);
             LFO3out[i] = LFO3[i].sinebuf(0.2);
             VCO3out[i] = VCO3[i].pulse(55 * pitch[i], 0.6);
@@ -63,7 +67,7 @@ double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ti
         }
 
         // reset ADSR
-        for (int i=0; i < 6; i++) {
+        for (int i=0; i < voicey; i++) {
             ADSR[i].trigger = 0;
             mySynthOutput = synthMix * volume;
         }

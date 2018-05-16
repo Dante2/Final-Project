@@ -72,7 +72,8 @@ public:
     maxiFilter VCF1, VCF2, VCF3[6];
 
     maxiOsc LFO1;
-    int voiceControl;
+    bool voiceChange, voiceChange1, voiceChange2;
+    float voiceControl;
     
     synth synth1, synth2, synth3, synth4, synth5;
     bool playSynth;
