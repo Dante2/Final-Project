@@ -478,19 +478,18 @@ void ofApp::keyPressed(int key){
     if (key == 'q'){
         recordNow1 = true;
     }
-    if (key == 'w'){
-        playLoopNow1 = true;
-        loopsOut = true;
-    }
+//    if (key == 'w'){
+//        playLoopNow1 = true;
+//        loopsOut = true;
+//    }
     
     // loop 2
     if (key == 'a'){
         recordNow2 = true;
     }
-    if (key == 's'){
-        playLoopNow2 = true;
-        loopsOut = true;
-    }
+//    if (key == 's'){
+//        playLoopNow2 = true;
+//    }
     
     // loop 3
 //    if (key == 'z'){
@@ -502,11 +501,12 @@ void ofApp::keyPressed(int key){
 //    }
     
     // play all loops
-//    if (key == 'e'){
-//        playLoopNow1 = true;
-//        playLoopNow2 = true;
-//        playLoopNow3 = true;
-//    }
+    if (key == 'e'){
+        playLoopNow1 = true;
+        playLoopNow2 = true;
+        playLoopNow3 = true;
+        loopsOut = true;
+    }
     
     // play synth
     if (key == 'd'){
@@ -553,17 +553,17 @@ void ofApp::keyReleased(int key){
     if (key == 'q'){
         recordNow1 = false;
     }
-    if (key == 'w'){
-        playLoopNow1 = false;
-    }
+//    if (key == 'w'){
+//        playLoopNow1 = false;
+//    }
     
     // loop 2
     if (key == 'a'){
         recordNow2 = false;
     }    
-    if (key == 's'){
-        playLoopNow2 = false;
-    }
+//    if (key == 's'){
+//        playLoopNow2 = false;
+//    }
     
     // loop 3
     if (key == 'z'){
@@ -575,11 +575,12 @@ void ofApp::keyReleased(int key){
 //    }
     
     // all loops
-//    if (key == 'e'){
-//        playLoopNow1 = false;
-//        playLoopNow2 = false;
-//        playLoopNow3 = false;
-//    }
+    if (key == 'e'){
+        playLoopNow1 = false;
+        playLoopNow2 = false;
+        playLoopNow3 = false;
+        loopsOut = false;
+    }
     
     // stop synth
     if (key == 'd'){

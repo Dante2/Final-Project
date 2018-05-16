@@ -20,17 +20,19 @@ class slaveLoop  {
     int loopLengthInSamples = 882100;
     bool loopRecord = false;
     double myLoop[882200];
+    double myLooped[882300];
     int counterPlay = 0;
     bool loopPlay = false;
     int index;
-    int loopTracker2;
+    int loopTracker, loopTracker2;
     
 public:
     double myLoopOutput[520];
     double recordLoop(int loopLength, int audioIndex, double signal[44200], bool recording, int slave);
     double playLoop(bool playing);
-    int loopTracker;
-    //    void triggerRecord();
+    
+    // this loopTracker3 is public so that it can be used to control playback of other loops
+    int loopTracker3;
     
 };
 

@@ -21,6 +21,7 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
     loopRecord = recording;
     if (loopRecord == true) {
         counterRecord ++;
+        // loop tracker keeps count of counter records incrementing value
         loopTracker = counterRecord;
         // cout << "loop counter = " << counterRecord << endl;
         if (counterRecord > loopLengthInSamples) {
@@ -42,6 +43,7 @@ double looper::playLoop(bool playing){
     if (loopPlay == true){
         counterPlay ++;
 //        cout << "counterPlay = " << counterPlay << endl;
+        // if the play couunter goes past the value stored in loop tracker it goes back to 0 keeping the loop trimmed to length set by loop tracker
         if (counterPlay > loopTracker) {
             counterPlay = 0;
         }
