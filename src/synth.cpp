@@ -12,26 +12,29 @@ using std::endl;
 using std::cin;
 using std::boolalpha;
 
-double synth::polySynth(bool play, double signal[], float vol){
+double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ticks, int tempo, int voices){
 
-//    ticky = ticks;
-//    BPM = tempo;
-//    counter = index;
+    ticky = ticks;
+    BPM = tempo;
     playMe = play;
     volume = vol;
-//    pitch = signal;
+    voice = voices;
+    int a = A;
+    int d = D;
+    int s = S;
+    int r = R;
 
     if (playMe == true){
         //cout << boolalpha << "synth playing = " << playMe <<endl;
     // setup synth
-    synthClock.setTicksPerBeat(4);
-    synthClock.setTempo(90);
+    synthClock.setTicksPerBeat(ticky);
+    synthClock.setTempo(BPM);
 
-        for (int i = 0; i < 6; i++) {
-            ADSR[i].setAttack(200);
-            ADSR[i].setDecay(200);
-            ADSR[i].setSustain(50);
-            ADSR[i].setRelease(30);
+        for (int i = 0; i < voice; i++) {
+            ADSR[i].setAttack(a);
+            ADSR[i].setDecay(d);
+            ADSR[i].setSustain(s);
+            ADSR[i].setRelease(r);
         }
 
         synthMix = 0;

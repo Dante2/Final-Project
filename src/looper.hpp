@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include "ofxMaxim.h"
 
 // using namespace std;
 /* Looper */
@@ -24,6 +25,7 @@ class looper  {
     bool loopPlay = false;
     int index;
     float vol;
+    maxiDelayline loop;
     
 public:
     double myLoopOutput[520];
@@ -31,8 +33,8 @@ public:
     double playLoop(bool playing, float amp);
     int loopTracker;
     bool playIt;
-    
-    //    void triggerRecord();
+//    double LoopThrough[520];
+//    void triggerRecord();
     
 };
 

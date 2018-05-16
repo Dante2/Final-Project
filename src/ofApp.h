@@ -49,7 +49,10 @@ public:
     //------ EFFECTS RACK ------//
     
     // delay ----
-    maxiDelayline myFace;
+    maxiDelayline guitar, loops;
+    maxiDistortion myArm;
+    maxiFlanger myTeeth;
+    maxiChorus myHead;
     
     // filter //
 //    maxiSVF myVarFilter;
@@ -67,15 +70,18 @@ public:
     //--------- SYNTH ----------//
 //    maxiClock myClock;
     maxiFilter VCF1, VCF2, VCF3[6];
+
+    maxiOsc LFO1;
+    int voiceControl;
     
-    synth synth1;
+    synth synth1, synth2, synth3, synth4, synth5;
     bool playSynth;
     
     /* Looper */
 
     // loops
     looper loop1;
-    slaveLoop loop2, loop3;
+    slaveLoop loop2, loop3, loop4, loop5;
     
     // triggers for each loops' functionalities
     // loop1
@@ -90,8 +96,16 @@ public:
     bool recordNow3;
     bool playLoopNow3;
     
+    // loop4
+    bool recordNow4;
+    bool playLoopNow4;
+    
+    // loop5
+    bool recordNow5;
+    bool playLoopNow5;
+    
     //MAXIMILIAN STUFF:
-    double wave, wave2, sample, outputs[2], ifftVal;
+    double wave, wave1, wave2, wave3, wave4, wave5, sample, outputs[2], ifftVal;
     
     // FFT
     ofxMaxiFFTOctaveAnalyzer oct;
@@ -109,8 +123,8 @@ public:
     float RMS = 0;
     
     // convolvers
-    convolve convolve1, convolve2, convolve3, convolve4;
-    bool convolvePlay1, convolvePlay2, convolvePlay3, convolvePlay4;
+    convolve convolve1, convolve2, convolve3, convolve4, convolve5;
+    bool convolvePlay1, convolvePlay2, convolvePlay3, convolvePlay4, convolvePlay5;
     
     // MFCC
     maxiMFCC mfcc;

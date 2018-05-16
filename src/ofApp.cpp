@@ -333,22 +333,35 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         //-------- SYNTH --------//
         
-        // synth object takes arguments boolean for playback and float for amplitude / volume
-        synth1.polySynth(playSynth, inOut, 0.8);
+        
+//        voiceControl = LFO1.sinebuf(2 * ofGetMouseY());
+
+        voiceControl = 1;
+        
+        // synth object takes arguments boolean for playback, float for volume, ints for ADSR respectvely, int for ticks, int for tempo, int for voices
+        synth1.polySynth(playSynth, 0.8, 200, 200, 50, 160, 2, 60, 6 * voiceControl);
+//        synth2.polySynth(playSynth, 0.2, 100, 50, 100, 450, 1, 60, 3 * voiceControl);
+//        synth3.polySynth(playSynth, 0.2, 500, 60, 300, 3000, 1, 60, 2 * voiceControl);
+//        synth4.polySynth(playSynth, 0.2, 50, 30, 500, 750, 1, 60, 3 * voiceControl);
+//        synth5.polySynth(playSynth, 0.2, 20, 60, 750, 50, 2, 60, 6 * voiceControl);
         
         //-------- LOOPER --------//
         
         // record main loop. The length of this sets the length of all other loops
-        loop1.recordLoop(44100 * 20, i, inOut, recordNow1);
+        loop1.recordLoop(44100 * 30, i, inOut, recordNow1);
         
         // slave loops. Length of which is set dynamically by first loop
-        loop2.recordLoop(44100 * 20, i, inOut, recordNow2, loop1.loopTracker);
-        loop3.recordLoop(44100 * 20, i, inOut, recordNow3, loop1.loopTracker);
+        loop2.recordLoop(44100 * 30, i, inOut, recordNow2, loop1.loopTracker);
+        loop3.recordLoop(44100 * 30, i, inOut, recordNow3, loop1.loopTracker);
+        loop4.recordLoop(44100 * 30, i, inOut, recordNow4, loop1.loopTracker);
+        loop5.recordLoop(44100 * 30, i, inOut, recordNow5, loop1.loopTracker);
         
         // play loop
         loop1.playLoop(loop1.playIt, 0.8);
         loop2.playLoop(loop1.playIt, 0.8);
         loop3.playLoop(loop1.playIt, 0.8);
+        loop4.playLoop(loop1.playIt, 0.8);
+        loop5.playLoop(loop1.playIt, 0.8);
         
         // convolvers
         
@@ -359,73 +372,59 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         //convolve 2
         // loops with synth
-        wave2 = synth1.mySynthOutput;
+        wave1 = synth1.mySynthOutput;
+        wave2 = synth2.mySynthOutput;
+        wave3 = synth3.mySynthOutput;
+        wave4 = synth4.mySynthOutput;
+        wave5 = synth5.mySynthOutput;
         double loopConvolve1 = loop1.myLoopOutput[i];
-//        double loopConvolve2 = loop2.myLoopOutput[i];
-//        double loopConvolve3 = loop3.myLoopOutput[i];
+        double loopConvolve2 = loop2.myLoopOutput[i];
+        double loopConvolve3 = loop3.myLoopOutput[i];
+        double loopConvolve4 = loop4.myLoopOutput[i];
+        double loopConvolve5 = loop5.myLoopOutput[i];
         
-        convolve1.convolving(convolvePlay1, loopConvolve1, wave2);
-//        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
-//        convolve3.convolving(convolvePlay3, loopConvolve3, wave2);
+        convolve1.convolving(convolvePlay1, loopConvolve1, wave1);
+        convolve2.convolving(convolvePlay2, loopConvolve2, wave2);
+        convolve3.convolving(convolvePlay3, loopConvolve3, wave3);
+        convolve4.convolving(convolvePlay4, loopConvolve4, wave4);
+        convolve5.convolving(convolvePlay5, loopConvolve5, wave5);
         
         // ------ OUTPUTS ------- //
         
         // live in
-        float ampOut = 0.5;
-        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut;
-        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
-
-//        // live in and loops
+        float ampOut = 0.3;
+        output[i * nChannels    ] = guitar.dl(inOut[i], 7000, 0.6, 7) * ampOut;
+        output[i * nChannels + 1] = guitar.dl(inOut[i], 7000, 0.6, 7) * ampOut;
+        
+        // live in and loops
+        // key e
         loopsOut = true;
         if (loopsOut){
         float ampOut1 = 0.5;
-        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
-        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
+        output[i * nChannels    ] = guitar.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut1;
+            
+        output[i * nChannels + 1] = guitar.dl(inOut[i],13000,0.7) +  loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut1;
         }
         
         // loop / live in / synth
+        // key c
         if (allBasic){
-        float ampOut2 = 0.3;
-        output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] * ampOut2;
-        output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] * ampOut2;
+        float ampOut2 = 0.1;
+        output[i * nChannels    ] = guitar.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + synth2.mySynthOutput + synth3.mySynthOutput + synth4.mySynthOutput + synth5.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
+            
+        output[i * nChannels + 1] = guitar.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + synth2.mySynthOutput + synth3.mySynthOutput + synth4.mySynthOutput + synth5.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
+            
         }
 
         // convolve
+        // key f
         if (convolveOutput){
             float ampOut3 = 0.5;
-            output[i * nChannels    ] = convolve1.convolveOut * ampOut3;
-            output[i * nChannels + 1] = convolve1.convolveOut * ampOut3;
+            output[i * nChannels    ] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut + convolve4.convolveOut + convolve5.convolveOut * ampOut3;
+            output[i * nChannels + 1] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut + convolve4.convolveOut + convolve5.convolveOut * ampOut3;
         }
         
         //------- ALL STANDARD OUTPUTS -------//
-        
-        //        float ampOut1 = 0.3;
-//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
-//
-//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + convolveOut * ampOut;
-        
-        
-        // convolve and live
-        
-//        float ampOut2 = 0.3;
-//        output[i*nChannels    ] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
-//
-//        output[i*nChannels + 1] = myFace.dl(inOut[i],13000,0.7) + convolveOut * ampOut;
-        
-        // convolved
-        
-//          float ampOut3 = 0.3;
-//        output[i*nChannels    ] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
-//        output[i*nChannels + 1] = convolveOut = ifft.process(mfft.magnitudes, mfft2.phases);
-
-        
-        // just synth
-        
-//        output[i*nChannels    ] = synth1.mySynthOutput * ampOut;
-//
-//        output[i*nChannels + 1] = synth1.mySynthOutput * ampOut;
-        
-        
 
         // all the normal outputs plus SVF taking live audio as input.
         
@@ -479,22 +478,25 @@ void ofApp::keyPressed(int key){
     if (key == 'q'){
         recordNow1 = true;
     }
-//    if (key == 'w'){
-//        playLoopNow1 = true;
-//        loopsOut = true;
-//    }
-    
+
     // loop 2
     if (key == 'a'){
         recordNow2 = true;
     }
-//    if (key == 's'){
-//        playLoopNow2 = true;
-//    }
     
     // loop 3
     if (key == 'z'){
         recordNow3 = true;
+    }
+    
+    //loop 4
+    if (key == 'w'){
+        recordNow4 = true;
+    }
+    
+    //loop 5
+    if (key == 's'){
+        recordNow5 = true;
     }
     
 //    if (key == 'x'){
@@ -502,12 +504,12 @@ void ofApp::keyPressed(int key){
 //    }
     
     // play all loops
-    if (key == 'e'){
+//
 //        playLoopNow1 = true;
 //        playLoopNow2 = true;
 //        playLoopNow3 = true;
-        loopsOut = true;
-    }
+//        loopsOut = true;
+//    }
 
     // play synth
     if (key == 'd'){
@@ -544,6 +546,7 @@ void ofApp::keyPressed(int key){
         convolvePlay3 = true;
         playSynth = true;
         convolveOutput = true;
+        loopsOut = false;
     }
 }
 
@@ -554,21 +557,25 @@ void ofApp::keyReleased(int key){
     if (key == 'q'){
         recordNow1 = false;
     }
-//    if (key == 'w'){
-//        playLoopNow1 = false;
-//    }
     
     // loop 2
     if (key == 'a'){
         recordNow2 = false;
-    }    
-//    if (key == 's'){
-//        playLoopNow2 = false;
-//    }
+    }
     
     // loop 3
     if (key == 'z'){
         recordNow3 = false;
+    }
+    
+    // loop 4
+    if (key == 'w'){
+        recordNow4 = false;
+    }
+    
+    // loop 5
+    if (key == 's'){
+        recordNow5 = false;
     }
     
 //    if (key == 'x'){
@@ -576,12 +583,12 @@ void ofApp::keyReleased(int key){
 //    }
     
     // all loops
-    if (key == 'e'){
-        playLoopNow1 = false;
-        playLoopNow2 = false;
-        playLoopNow3 = false;
-        loopsOut = false;
-    }
+//    if (key == 'e'){
+//        playLoopNow1 = false;
+//        playLoopNow2 = false;
+//        playLoopNow3 = false;
+//        loopsOut = false;
+//    }
     
     // stop synth
     if (key == 'd'){
@@ -615,6 +622,7 @@ void ofApp::keyReleased(int key){
         convolvePlay3 = false;
         playSynth = false;
         convolveOutput = false;
+        loopsOut = true;
     }
 }
 

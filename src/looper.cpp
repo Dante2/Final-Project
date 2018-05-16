@@ -55,7 +55,9 @@ double looper::playLoop(bool playing, float amp){
             counterPlay = 0;
         }
         myLoopOutput[index] = myLoop[counterPlay] * vol;
-        // cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
+//        LoopThrough[index] = loop.dl(myLoopOutput[index], 7000, 0.6, 7);
+        
+// cout << "loop playing = " << myLoopOutput[counterPlay] << endl;
     } else if (loopPlay == false){
         counterPlay = 0;
     }
