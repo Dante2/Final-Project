@@ -332,28 +332,17 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         }
 
         //-------- SYNTH --------//
+
+//        LFO1.sinebuf(100)
         
-//        LFO1.sinebuf(100 * ofGetMouseY())
-
+        // control ADSR
+        // control tempo
+        // control base frequencies
+        // control modulating frequencies
+        // control ticks
+        
+        // voice control
         // key t
-        // change number of voices in synths
-//        voiceControl = 1;
-//        if (voiceChange1){
-//            voiceChange = voiceChange1;
-//            voiceControl * 1.5;
-//        } else if (voiceChange1 == false) {
-//            voiceChange = voiceChange1;
-//            voiceControl = 1;
-//        }
-//
-//        if (voiceChange2){
-//            voiceChange = voiceChange2;
-//            voiceControl * 3;
-//        } else if (voiceChange2 == false) {
-//            voiceControl = 1;
-//            voiceChange = voiceChange2;
-//        }
-
         voiceControl = 1;
         if (voiceChange1){
             voiceChange = voiceChange1;
@@ -363,26 +352,37 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
             voiceControl = 1;
         }
         
-//        } else
+        // ADSR control
+        // key g
+        adsrControl = 1;
+        float adsrModulate = 1;
+        if (ADSRcontrol){
+            adsrControl = 10;
+            adsrModulate = 0.03;
+        } else if (ADSRcontrol == false) {
+            adsrControl = 1;
+            adsrModulate = 1;
+        }
         
-//            if (voiceChange2){
-//            voiceChange = voiceChange2;
-//            voiceControl * 0.5;
-
-            
-//        } else if (voiceChange2 == false) {
-//            voiceControl = 1;
-//            voiceChange = voiceChange2;
-//        }
-        
+        // tempo control
+        // key b
+        BPM = 1;
+        int BPMmodulate = 1;
+        if (tempoControl){
+            BPM = 2;
+            BPMmodulate = 0.05;
+        } else if (tempoControl == false){
+            BPM = 1;
+            BPMmodulate = 1;
+        }
         
         // synth object takes arguments boolean for playback, float for volume, ints for ADSR respectvely, int for ticks, int for tempo, int for voices
-        synth1.polySynth(playSynth, 0.2, 200, 200, 50, 160, 2, 60, 6 * voiceControl, voiceChange);
-        synth2.polySynth(playSynth, 0.2, 100, 50, 100, 450, 3, 60, 4 * voiceControl, voiceChange);
-        synth3.polySynth(playSynth, 0.2, 500, 60, 300, 3000, 1, 60, 3 * voiceControl, voiceChange);
-        synth4.polySynth(playSynth, 0.2, 50, 30, 500, 750, 2, 90, 4 * voiceControl, voiceChange);
-        synth5.polySynth(playSynth, 0.8, 20, 60, 750, 100, 4, 120, 6 * voiceControl, voiceChange);
-        
+        synth1.polySynth(playSynth, 0.2, 200 * adsrControl, 200 * adsrControl, 50 * adsrControl, 160 * adsrControl, 2, 60 * BPM, 6 * voiceControl, voiceChange);
+        synth2.polySynth(playSynth, 0.5, 100 * adsrControl, 50 * adsrControl, 100 * adsrControl, 450 * adsrControl, 3, 60 * BPM, 4 * voiceControl, voiceChange);
+        synth3.polySynth(playSynth, 0.5, 500 * adsrControl, 60 * adsrControl, 300 * adsrControl, 3000 * adsrControl, 1, 60 * BPM, 3 * voiceControl, voiceChange);
+        synth4.polySynth(playSynth, 0.5, 50 * (adsrControl * adsrModulate), 30  * adsrControl, 500  * (adsrControl * adsrModulate), 750  * (adsrControl * adsrModulate), 2, 90 * (BPM * BPMmodulate), 4 * voiceControl, voiceChange);
+        synth5.polySynth(playSynth, 0.5, 20 * adsrControl, 60 * adsrControl, 750 * adsrControl, 100 * adsrControl, 4, 120 * (BPM * BPMmodulate), 6 * voiceControl, voiceChange);
+    
         //-------- LOOPER --------//
         
         // record main loop. The length of this sets the length of all other loops
@@ -593,7 +593,7 @@ void ofApp::keyPressed(int key){
     }
     
     if (key == 'g'){
-        voiceChange2 = true;
+        ADSRcontrol = true;
     }
 }
 
@@ -677,7 +677,7 @@ void ofApp::keyReleased(int key){
         voiceChange1 = false;
     }
     if (key == 'g'){
-        voiceChange2 = false;
+        ADSRcontrol = false;
     }
 }
 

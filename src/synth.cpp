@@ -12,7 +12,7 @@ using std::endl;
 using std::cin;
 using std::boolalpha;
 
-double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ticks, int tempo, int voices, bool vChange){
+double synth::polySynth(bool play, float vol, double A, double D, double S, double R, int ticks, int tempo, int voices, bool vChange){
 
     ticky = ticks;
     BPM = tempo;
@@ -20,10 +20,10 @@ double synth::polySynth(bool play, float vol, int A, int D, int S, int R, int ti
     volume = vol;
     voicey = voices;
     changeUp = vChange;
-    int a = A;
-    int d = D;
-    int s = S;
-    int r = R;
+    a = A;
+    d = D;
+    s = S;
+    r = R;
 
     if (playMe == true){
         //cout << boolalpha << "synth playing = " << playMe <<endl;

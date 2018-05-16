@@ -78,6 +78,12 @@ public:
     synth synth1, synth2, synth3, synth4, synth5;
     bool playSynth;
     
+    bool ADSRcontrol;
+    double adsrControl;
+    
+    bool tempoControl;
+    int BPM;
+    
     /* Looper */
 
     // loops
