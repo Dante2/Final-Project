@@ -346,9 +346,9 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         loop3.recordLoop(44100 * 20, i, inOut, recordNow3, loop1.loopTracker);
         
         // play loop
-        loop1.playLoop(playLoopNow1);
-        loop2.playLoop(playLoopNow2);
-        loop3.playLoop(playLoopNow3);
+        loop1.playLoop(loop1.playIt, 0.8);
+        loop2.playLoop(loop1.playIt, 0.8);
+        loop3.playLoop(loop1.playIt, 0.8);
         
         // convolvers
         
@@ -374,8 +374,9 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         float ampOut = 0.5;
         output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) * ampOut;
         output[i * nChannels + 1] = myFace.dl(inOut[i],13000,0.7) * ampOut;
-        
-        // live in and loops
+
+//        // live in and loops
+        loopsOut = true;
         if (loopsOut){
         float ampOut1 = 0.5;
         output[i * nChannels    ] = myFace.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut1;
@@ -492,9 +493,9 @@ void ofApp::keyPressed(int key){
 //    }
     
     // loop 3
-//    if (key == 'z'){
-//        recordNow3 = true;
-//    }
+    if (key == 'z'){
+        recordNow3 = true;
+    }
     
 //    if (key == 'x'){
 //        playLoopNow3 = true;
@@ -502,12 +503,12 @@ void ofApp::keyPressed(int key){
     
     // play all loops
     if (key == 'e'){
-        playLoopNow1 = true;
-        playLoopNow2 = true;
-        playLoopNow3 = true;
+//        playLoopNow1 = true;
+//        playLoopNow2 = true;
+//        playLoopNow3 = true;
         loopsOut = true;
     }
-    
+
     // play synth
     if (key == 'd'){
         playSynth = true;

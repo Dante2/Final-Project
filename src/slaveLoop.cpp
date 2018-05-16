@@ -26,8 +26,10 @@ double slaveLoop::recordLoop(int loopLength, int audioIndex, double signal[], bo
         // set the counter going
         counterRecord ++;
         
+        loopTracker = slave;
+        
         // loopTracker2 is being set to the length dictated by slave which is being fed by the tracker in loop1 and will be used in playback
-        loopTracker2 = slave;
+        loopTracker2 = loopTracker;
         if (counterRecord > loopLengthInSamples) {
             counterRecord = 0;
         }
@@ -35,6 +37,7 @@ double slaveLoop::recordLoop(int loopLength, int audioIndex, double signal[], bo
         myLoop[counterRecord + 1] = signal[index + 1];
     } else if (loopRecord == false){
         counterRecord = 0;
+        loopTracker = 0;
     }
 }
 
@@ -42,7 +45,8 @@ double slaveLoop::recordLoop(int loopLength, int audioIndex, double signal[], bo
 
 //-------- PLAY LOOP --------//
 
-double slaveLoop::playLoop(bool playing){
+double slaveLoop::playLoop(bool playing, float amp){
+    vol = amp;
     loopPlay = playing;
     if (loopPlay == true){
         counterPlay ++;
@@ -51,7 +55,7 @@ double slaveLoop::playLoop(bool playing){
         if (counterPlay > loopTracker2) {
             counterPlay = 0;
         }
-        myLoopOutput[index] = myLoop[counterPlay];
+        myLoopOutput[index] = myLoop[counterPlay] * vol;
     } else if (loopPlay == false){
         counterPlay = 0;
     }

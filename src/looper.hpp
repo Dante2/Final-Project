@@ -23,12 +23,15 @@ class looper  {
     int counterPlay = 0;
     bool loopPlay = false;
     int index;
+    float vol;
     
 public:
     double myLoopOutput[520];
     double recordLoop(int loopLength, int audioIndex, double signal[44200], bool recording);
-    double playLoop(bool playing);
+    double playLoop(bool playing, float amp);
     int loopTracker;
+    bool playIt;
+    
     //    void triggerRecord();
     
 };

@@ -25,11 +25,12 @@ class slaveLoop  {
     bool loopPlay = false;
     int index;
     int loopTracker, loopTracker2;
+    float vol;
     
 public:
     double myLoopOutput[520];
     double recordLoop(int loopLength, int audioIndex, double signal[44200], bool recording, int slave);
-    double playLoop(bool playing);
+    double playLoop(bool playing, float amp);
     
     // this loopTracker3 is public so that it can be used to control playback of other loops
     int loopTracker3;
