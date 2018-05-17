@@ -111,23 +111,33 @@ void ofApp::setup(){
     
     destination = "localhost";
     
-    // send OSC
+    // ------- send OSC -------- //
+    
+    // Wekinator
     sendPort = 6450;
+    sender.setup(destination, sendPort);
+    
+    // DTW
     sendPortActivate = 6452;
     sendPortDeactivate = 6453;
-    
-    sender.setup(destination, sendPort);
     senderActivation.setup(destination, sendPortActivate);
     senderDeactivation.setup(destination, sendPortDeactivate);
     
-    // receive OSC
+    // KNN
+    actKNN = 3000;
+    deActKNN = 4000;
+    sendActKNN.setup(destination, actKNN);
+    sendDeActKNN.setup(destination, deActKNN);
+    
+    // ------ receive OSC ------ //
+    
+    // recieve wekinator
     recvPort = 12000;
-    recvRawMyo = 5431;
     receiver1.setup(recvPort);
-//    cout << boolalpha << "receiver 1 setup = " << receiver1.setup(recvPort) << endl;
-
+    
+    // recieve myo mapper
+    recvRawMyo = 5431;
     receiver2.setup(recvRawMyo);
-//    cout << boolalpha << "receiver 2 = " << receiver2.setup(recvRawMyo) << endl;
     
     //------ myo ------//
     
@@ -152,6 +162,25 @@ void ofApp::update(){
             m.addFloatArg(mfccs[i]);
         }
         sender.sendMessage(m);
+        
+        // ------ SWITCH WEKI KNN CLASSIFIER RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
+        
+        ofxOscMessage a, b, c;
+        //        if (RMS > 3){
+        if (RMS > 0.2){
+            switchedOn = true;
+            a.setAddress("/wekinator/control/startRecording");
+            sendActKNN.sendMessage(a);
+            // cout << "message out = " << m.getAddress() << endl;
+            
+            if (switchedOn == true){
+                switchedOn = false;
+                b.setAddress("/wekinator/control/stopRecording");
+                sendDeActKNN.sendMessage(b);
+                switchedOn = false;
+            }
+        }
+        
         
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
@@ -209,7 +238,7 @@ void ofApp::update(){
     while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;
         receiver2.getNextMessage(&p);
-        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
+//        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
 
         if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
             emg = p.getArgAsFloat(0);

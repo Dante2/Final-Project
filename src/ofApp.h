@@ -158,18 +158,22 @@ public:
     
     // ----- SEND ----- //
     // ofxOscSender object
-    ofxOscSender sender, senderActivation, senderDeactivation;
+    ofxOscSender sender, senderActivation, senderDeactivation, sendActKNN, sendDeActKNN;
     
     // IP address we're sending to
     string destination;
     // port we're sending to
     int sendPort;
     
+    // DTW activation
     int sendPortActivate;
-    
     int sendPortDeactivate;
-    // what we're going to send
+    // what we're sending
     string sent;
+    
+    // KNN classification activation
+    int actKNN;
+    int deActKNN;
     
     // ----- RECEIEVE ----- //
     // OSC receivers. one for raw myo mapper stuff and one for weki outputs
