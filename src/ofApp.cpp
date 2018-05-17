@@ -592,8 +592,14 @@ void ofApp::keyPressed(int key){
         voiceChange1 = true;
     }
     
+    // ADSR
     if (key == 'g'){
         ADSRcontrol = true;
+    }
+    
+    // tempo
+    if (key == 'b'){
+        tempoControl = true;
     }
 }
 
@@ -676,8 +682,15 @@ void ofApp::keyReleased(int key){
     if (key == 't'){
         voiceChange1 = false;
     }
+    
+    // ADSR
     if (key == 'g'){
         ADSRcontrol = false;
+    }
+    
+    // tempo
+    if (key == 'b'){
+        tempoControl = false;
     }
 }
 
