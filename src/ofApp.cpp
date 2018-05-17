@@ -121,13 +121,13 @@ void ofApp::setup(){
     senderDeactivation.setup(destination, sendPortDeactivate);
     
     // receive OSC
-//    recvPort = 12000;
+    recvPort = 12000;
     recvRawMyo = 5431;
-    receiver1.setup(12000);
-    cout << boolalpha << "receiver 1 = " << receiver1.setup(recvPort) << endl;
+    receiver1.setup(recvPort);
+//    cout << boolalpha << "receiver 1 setup = " << receiver1.setup(recvPort) << endl;
 
     receiver2.setup(recvRawMyo);
-    cout << boolalpha << "receiver 2 = " << receiver2.setup(recvRawMyo) << endl;
+//    cout << boolalpha << "receiver 2 = " << receiver2.setup(recvRawMyo) << endl;
     
     //------ myo ------//
     
@@ -173,51 +173,55 @@ void ofApp::update(){
     
     // ----- receive OSC ----- //
     
-    ofxOscMessage q;
- 
-        receiver1.getNextMessage(&q);
-    cout << boolalpha << "receiver 1 = " << receiver1.getNextMessage(&q) << endl;
     
+    while(receiver1.hasWaitingMessages()){
+        
+        ofxOscMessage q;
+        receiver1.getNextMessage(&q);
+//        cout << boolalpha << "receiver 1 update = " << receiver1.getNextMessage(&q) << endl;
+        
+        if(q.getAddress() == "/wek/outputs"){
+            messages = q.getAddress();
+//            cout << "message = " << messages << endl;
+        }
+        
+        if(q.getAddress() == "/output_1"){
+            messages = q.getAddress();
+            cout << "message = " << messages << endl;
+            
+            // get class 2 for activation
+        } else if (q.getAddress() == "/output_2"){
+            messages = q.getAddress();
+            cout << "message = " << messages << endl;
+            
+            // get class 3 for activation
+        } else if (q.getAddress() == "/output_3"){
+            messages = q.getAddress();
+            cout << "message = " << messages << endl;
+        }
+    }
         // Receiveing gesture output messages
 
         // get class 1 for activation
-    
-    if(m.getAddress() == "/output_1"){
-            messages = m.getAddress();
-            cout << "message = " << messages << endl;
-    
-            // get class 2 for activation
-        } else if (m.getAddress() == "/output_2"){
-            messages = m.getAddress();
-            cout << "message = " << messages << endl;
 
-            // get class 3 for activation
-        } else if (m.getAddress() == "/output_3"){
-            messages = m.getAddress();
-            cout << "message = " << messages << endl;
-        }
-    
     // ----- raw Myo data ----- //
     
     while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;
         receiver2.getNextMessage(&p);
-//        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
+        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
 
         if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
             emg = p.getArgAsFloat(0);
-//            cout << "emg = " << emg << endl;
         }
 
         // can't seem to get any gyro data through. I reckon this is down to Myo Mapper putting out the wrong OSC message for this selection.
         if(p.getAddress() == "/myo1/gyro/fod"){
             gyro = p.getArgAsFloat(0);
-//            cout << "gyro = " << gyro << endl;
         }
 
         if(p.getAddress() == "/myo1/orientation/quaternion"){
             quaternion = p.getArgAsFloat(0);
-//            cout << "quaternion = " << quaternion << endl;
         }
     }
 }
