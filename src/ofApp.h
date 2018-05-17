@@ -70,19 +70,23 @@ public:
     //--------- SYNTH ----------//
 //    maxiClock myClock;
     maxiFilter VCF1, VCF2, VCF3[6];
-
-    maxiOsc LFO1;
-    bool voiceChange, voiceChange1, voiceChange2;
-    float voiceControl;
     
     synth synth1, synth2, synth3, synth4, synth5;
     bool playSynth;
+    
+    maxiOsc LFO1;
+    
+    bool voiceChange, voiceChange1, voiceChange2;
+    float voiceControl;
     
     bool ADSRcontrol;
     double adsrControl;
     
     bool tempoControl;
     int BPM;
+    
+    bool ticksControl;
+    int ticks;
     
     /* Looper */
 
@@ -168,8 +172,8 @@ public:
     string sent;
     
     // ----- RECEIEVE ----- //
-    // OSC receiver
-    ofxOscReceiver receiver;
+    // OSC receivers. one for raw myo mapper stuff and one for weki outputs
+    ofxOscReceiver receiver1, receiver2;
     // port where we listen for messages
     int recvPort;
     // string containing the received messages for display

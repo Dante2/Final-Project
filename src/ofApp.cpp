@@ -123,8 +123,8 @@ void ofApp::setup(){
     // receive OSC
     recvPort = 12000;
     recvRawMyo = 5431;
-    receiver.setup(recvPort);
-    receiver.setup(recvRawMyo);
+    receiver1.setup(recvPort);
+    receiver2.setup(recvRawMyo);
     
     //------ myo ------//
     
@@ -153,7 +153,7 @@ void ofApp::update(){
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
 //        if (RMS > 3){
-        if (RMS > 0.5){
+        if (RMS > 0.2){
             switchedOn = true;
             n.setAddress("/wekinator/control/startDtwRecording");
             senderActivation.sendMessage(n);
@@ -170,44 +170,50 @@ void ofApp::update(){
     
     // ----- receive OSC ----- //
     
-    // ofxOscMessage p, q, r;
+//    ofxOscMessage q;
+ 
     
-    receiver.getNextMessage(&m);
+    receiver1.getNextMessage(&m);
     
-    // Receiveing gesture output messages
+        // Receiveing gesture output messages
+
+        // get class 1 for activation
     
-    // get class 1 for activation
     if(m.getAddress() == "/output_1"){
-        messages = m.getAddress();
-        cout << "message = " << messages << endl;
-        
-    // get class 2 for activation
-    } else if (m.getAddress() == "/output_2"){
-        messages = m.getAddress();
-        cout << "message = " << messages << endl;
-    } 
+            messages = m.getAddress();
+            cout << "message = " << messages << endl;
+    
+            // get class 2 for activation
+        } else if (m.getAddress() == "/output_2"){
+            messages = m.getAddress();
+            cout << "message = " << messages << endl;
+
+            // get class 3 for activation
+        } else if (m.getAddress() == "/output_3"){
+            messages = m.getAddress();
+            cout << "message = " << messages << endl;
+        }
     
     // ----- raw Myo data ----- //
     
-    
-    while(receiver.hasWaitingMessages()) {
+    while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;
-        receiver.getNextMessage(&p);
+        receiver2.getNextMessage(&p);
 
         if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
             emg = p.getArgAsFloat(0);
-            cout << "emg = " << emg << endl;
+//            cout << "emg = " << emg << endl;
         }
-        
-        // can't seem to get anyq gyro data through. I reckon this is down to Myo Mapper putting out the wrong OSC message for this selection.
+
+        // can't seem to get any gyro data through. I reckon this is down to Myo Mapper putting out the wrong OSC message for this selection.
         if(p.getAddress() == "/myo1/gyro/fod"){
             gyro = p.getArgAsFloat(0);
-            cout << "gyro = " << gyro << endl;
+//            cout << "gyro = " << gyro << endl;
         }
-        
+
         if(p.getAddress() == "/myo1/orientation/quaternion"){
             quaternion = p.getArgAsFloat(0);
-            cout << "quaternion = " << quaternion << endl;
+//            cout << "quaternion = " << quaternion << endl;
         }
     }
 }
@@ -376,12 +382,24 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
             BPMmodulate = 1;
         }
         
+        // ticks control
+        // key y
+        ticks = 1;
+        int tickModulate = 1;
+        if (ticksControl){
+            ticks = 2;
+            tickModulate = 0.05;
+        } else if (ticksControl == false){
+            ticks = 1;
+            tickModulate = 1;
+        }
+        
         // synth object takes arguments boolean for playback, float for volume, ints for ADSR respectvely, int for ticks, int for tempo, int for voices
-        synth1.polySynth(playSynth, 0.2, 200 * adsrControl, 200 * adsrControl, 50 * adsrControl, 160 * adsrControl, 2, 60 * BPM, 6 * voiceControl, voiceChange);
-        synth2.polySynth(playSynth, 0.5, 100 * adsrControl, 50 * adsrControl, 100 * adsrControl, 450 * adsrControl, 3, 60 * BPM, 4 * voiceControl, voiceChange);
-        synth3.polySynth(playSynth, 0.5, 500 * adsrControl, 60 * adsrControl, 300 * adsrControl, 3000 * adsrControl, 1, 60 * BPM, 3 * voiceControl, voiceChange);
-        synth4.polySynth(playSynth, 0.5, 50 * (adsrControl * adsrModulate), 30  * adsrControl, 500  * (adsrControl * adsrModulate), 750  * (adsrControl * adsrModulate), 2, 90 * (BPM * BPMmodulate), 4 * voiceControl, voiceChange);
-        synth5.polySynth(playSynth, 0.5, 20 * adsrControl, 60 * adsrControl, 750 * adsrControl, 100 * adsrControl, 4, 120 * (BPM * BPMmodulate), 6 * voiceControl, voiceChange);
+        synth1.polySynth(playSynth, 0.2, 200 * adsrControl, 200 * adsrControl, 50 * adsrControl, 160 * adsrControl, 2 * ticks, 60 * BPM, 6 * voiceControl, voiceChange);
+        synth2.polySynth(playSynth, 0.5, 100 * adsrControl, 50 * adsrControl, 100 * adsrControl, 450 * adsrControl, 3 * (ticks * tickModulate), 60 * BPM, 4 * voiceControl, voiceChange);
+        synth3.polySynth(playSynth, 0.5, 500 * adsrControl, 60 * adsrControl, 300 * adsrControl, 3000 * adsrControl, 1 * ticks, 60 * BPM, 3 * voiceControl, voiceChange);
+        synth4.polySynth(playSynth, 0.5, 50 * (adsrControl * adsrModulate), 30  * adsrControl, 500  * (adsrControl * adsrModulate), 750  * (adsrControl * adsrModulate), 2 * ticks, 90 * (BPM * BPMmodulate), 4 * voiceControl, voiceChange);
+        synth5.polySynth(playSynth, 0.5, 20 * adsrControl, 60 * adsrControl, 750 * adsrControl, 100 * adsrControl, 4 * (ticks * tickModulate), 120 * (BPM * BPMmodulate), 6 * voiceControl, voiceChange);
     
         //-------- LOOPER --------//
         
@@ -601,6 +619,11 @@ void ofApp::keyPressed(int key){
     if (key == 'b'){
         tempoControl = true;
     }
+    
+    // ticks
+    if (key == 'y'){
+        ticksControl = true;
+    }
 }
 
 //--------------------------------------------------------------
@@ -691,6 +714,11 @@ void ofApp::keyReleased(int key){
     // tempo
     if (key == 'b'){
         tempoControl = false;
+    }
+    
+    // ticks
+    if (key == 'y'){
+        ticksControl = false;
     }
 }
 
