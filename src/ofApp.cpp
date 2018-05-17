@@ -121,10 +121,13 @@ void ofApp::setup(){
     senderDeactivation.setup(destination, sendPortDeactivate);
     
     // receive OSC
-    recvPort = 12000;
+//    recvPort = 12000;
     recvRawMyo = 5431;
-    receiver1.setup(recvPort);
+    receiver1.setup(12000);
+    cout << boolalpha << "receiver 1 = " << receiver1.setup(recvPort) << endl;
+
     receiver2.setup(recvRawMyo);
+    cout << boolalpha << "receiver 2 = " << receiver2.setup(recvRawMyo) << endl;
     
     //------ myo ------//
     
@@ -170,10 +173,10 @@ void ofApp::update(){
     
     // ----- receive OSC ----- //
     
-//    ofxOscMessage q;
+    ofxOscMessage q;
  
-    
-    receiver1.getNextMessage(&m);
+        receiver1.getNextMessage(&q);
+    cout << boolalpha << "receiver 1 = " << receiver1.getNextMessage(&q) << endl;
     
         // Receiveing gesture output messages
 
@@ -199,6 +202,7 @@ void ofApp::update(){
     while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;
         receiver2.getNextMessage(&p);
+//        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
 
         if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
             emg = p.getArgAsFloat(0);
