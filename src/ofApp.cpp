@@ -185,6 +185,7 @@ void ofApp::update(){
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
 //        if (RMS > 3){
+//        if (RMS > 0.2){
         if (RMS > 0.2){
             switchedOn = true;
             n.setAddress("/wekinator/control/startDtwRecording");
@@ -209,9 +210,12 @@ void ofApp::update(){
         receiver1.getNextMessage(&q);
 //        cout << boolalpha << "receiver 1 update = " << receiver1.getNextMessage(&q) << endl;
         
+        // this all needs to be modified now.
+        
         if(q.getAddress() == "/wek/outputs"){
             messages = q.getAddress();
-//            cout << "message = " << messages << endl;
+            int classed = q.getArgAsFloat(0);
+            cout << "class = " << classed << endl;
         }
         
         if(q.getAddress() == "/output_1"){
@@ -331,13 +335,17 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
 
         int bins   = fftSize / 2.0;
         //do some manipulation
-        // int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+            
+         int hpCutoff = floor(((mouseX + ofGetWindowPositionX()) / (float) ofGetScreenWidth()) * fftSize / 2.0);
+            
         //highpass
         //                        memset(mfft.magnitudes, 0, sizeof(float) * hpCutoff);
         //                        memset(mfft.phases, 0, sizeof(float) * hpCutoff);
+            
+            
         //lowpass
-//        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
-//        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+        memset(mfft.magnitudes + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
+        memset(mfft.phases + hpCutoff, 0, sizeof(float) * (bins - hpCutoff));
 
         //----- THIS CHROMOGRAM CAN BE USED FOR PITCH RECOGNITION LATER -----//
 
