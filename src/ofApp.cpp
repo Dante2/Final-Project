@@ -139,6 +139,10 @@ void ofApp::setup(){
     recvRawMyo = 5431;
     receiver2.setup(recvRawMyo);
     
+    // recieve pedal
+    recvPedal = 15000;
+    receiverPedal.setup(recvPedal);
+    
     //------ myo ------//
     
 //    myo.setup();
@@ -165,7 +169,7 @@ void ofApp::update(){
         
         // ------ SWITCH WEKI KNN CLASSIFIER RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
-        ofxOscMessage a, b, c;
+        ofxOscMessage a, b;
         //        if (RMS > 3){
         if (RMS > 0.2){
             switchedOn = true;
@@ -203,41 +207,50 @@ void ofApp::update(){
     
     // ----- receive OSC ----- //
     
+    // ------ Pedal ------- //
+    
+    while(receiverPedal.hasWaitingMessages()){
+        ofxOscMessage c;
+        ofxOscMessage q;
+        receiverPedal.getNextMessage(&c);
+        int pedal = c.getArgAsInt(0);
+
+        if(pedal == 1){
+            receiver1.getNextMessage(&q);
+            if(q.getAddress() == "/wek/outputs"){
+                messages = q.getAddress();
+                int classed = q.getArgAsFloat(0);
+                cout << "class = " << classed << endl;
+            }
+        }
+    // ------ Wekinator ------- //
     
     while(receiver1.hasWaitingMessages()){
         
-        ofxOscMessage q;
-        receiver1.getNextMessage(&q);
+        
 //        cout << boolalpha << "receiver 1 update = " << receiver1.getNextMessage(&q) << endl;
         
         // this all needs to be modified now.
         
-        if(q.getAddress() == "/wek/outputs"){
-            messages = q.getAddress();
-            int classed = q.getArgAsFloat(0);
-            cout << "class = " << classed << endl;
-        }
         
-        if(q.getAddress() == "/output_1"){
+        
+        if(q.getAddress() == "1"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
             
             // get class 2 for activation
-        } else if (q.getAddress() == "/output_2"){
+        } else if (q.getAddress() == "2"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
             
             // get class 3 for activation
-        } else if (q.getAddress() == "/output_3"){
+        } else if (q.getAddress() == "3"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
         }
     }
-        // Receiveing gesture output messages
-
-        // get class 1 for activation
-
-    // ----- raw Myo data ----- //
+    
+    // ----- Myo Mapper ----- //
     
     while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;

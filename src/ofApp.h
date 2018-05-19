@@ -177,14 +177,16 @@ public:
     
     // ----- RECEIEVE ----- //
     // OSC receivers. one for raw myo mapper stuff and one for weki outputs
-    ofxOscReceiver receiver1, receiver2;
-    // port where we listen for messages
+    ofxOscReceiver receiver1, receiver2, receiverPedal;
+    
+    // port for Weki messages
     int recvPort;
-    // string containing the received messages for display
+    string messages;
     
     // receive raw Myo data
     int recvRawMyo;
-    string messages;
+    
+    int recvPedal;
     
     //----- Myo -----//
 //    ofxMyo::Myo myo;
