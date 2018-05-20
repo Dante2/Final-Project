@@ -206,32 +206,105 @@ void ofApp::update(){
     
     // ------ Pedal ------- //
     
+    while(receiverPedal.hasWaitingMessages()){
+        ofxOscMessage z;
+        int pedal;
+        receiverPedal.getNextMessage(&z);
+        if(z.getAddress() == "/pedal"){
+            cout << "pedal = " << z.getAddress() << endl;
+            
+            pedal = z.getArgAsInt(0);
+            cout << "pedal = " << pedal << endl;
+            
+            if (pedal == 1){
+                recordNow1 = true;
+            }
+            
+            if (pedal == 6){
+                recordNow1 = false;
+            }
+            
+            if (pedal == 2){
+                recordNow2 = true;
+            }
+            
+            if (pedal == 7){
+                recordNow2 = false;
+            }
+
+            if (pedal == 3){
+                recordNow3 = true;
+            }
+            
+            if (pedal == 8){
+                recordNow3 = false;
+            }
+            
+            if (pedal == 4){
+                rmsToggle = true;
+            }
+
+        }
+    }
+
+    
     
     
     while(receiver1.hasWaitingMessages()){
-        
         ofxOscMessage q;
         receiver1.getNextMessage(&q);
+        
+        bool convolveOn;
         
         if(q.getAddress() == "/output_1"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
             
+            rmsToggle = false;
+            allBasic = false;
+            convolveOn = true;
+//            playLoopNow1 = true;
+//            playLoopNow2 = true;
+//            playLoopNow3 = true;
+            convolvePlay1 = true;
+            convolvePlay2 = true;
+            convolvePlay3 = true;
             playSynth = true;
-            allBasic = true;
+            convolveOutput = true;
+            
             
             // get class 2 for activation
-        } else if (q.getAddress() == "/output_2"){
-            messages = q.getAddress();
-            cout << "message = " << messages << endl;
+        }
+        
+        if (convolveOn == true){
+            if (q.getAddress() == "/output_2"){
+                messages = q.getAddress();
+
+                rmsToggle = false;
+                
+                voiceChange1 = true;
+                
+                ADSRcontrol = true;
+                
+                tempoControl = true;
+                
+                ticksControl = true;
+                }
+                
+                cout << "message = " << messages << endl;
             
             // get class 3 for activation
         } else if (q.getAddress() == "/output_3"){
             messages = q.getAddress();
+            
+            convolveOutput = false;
+            convolveOn = false;
+            allBasic = true;
+            
             cout << "message = " << messages << endl;
             
-            playSynth = false;
-            allBasic = false;
+//            playSynth = false;
+//            allBasic = false;
             
         }
     }
@@ -409,7 +482,7 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         adsrControl = 1;
         float adsrModulate = 1;
         if (ADSRcontrol){
-            adsrControl = 10;
+            adsrControl = 0.002 * quaternion;
             adsrModulate = 0.03;
         } else if (ADSRcontrol == false) {
             adsrControl = 1;
@@ -493,63 +566,32 @@ void ofApp::audioOut(float * output, int bufferSize, int nChannels) {
         
         // ------ OUTPUTS ------- //
         
-        // live in
-        float ampOut = 0.3;
-        output[i * nChannels    ] = guitar.dl(inOut[i], 7000, 0.6, 7) * ampOut;
-        output[i * nChannels + 1] = guitar.dl(inOut[i], 7000, 0.6, 7) * ampOut;
-        
-        // live in and loops
-        // key e
-        loopsOut = true;
-        if (loopsOut){
-        float ampOut1 = 0.5;
-        output[i * nChannels    ] = guitar.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut1;
-            
-        output[i * nChannels + 1] = guitar.dl(inOut[i],13000,0.7) +  loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut1;
-        }
-        
         // loop / live in / synth
-        // key c
+        
+        allBasic = true;
+        
         if (allBasic){
-        float ampOut2 = 0.1;
-        output[i * nChannels    ] = guitar.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + synth2.mySynthOutput + synth3.mySynthOutput + synth4.mySynthOutput + synth5.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
-            
-        output[i * nChannels + 1] = guitar.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + synth2.mySynthOutput + synth3.mySynthOutput + synth4.mySynthOutput + synth5.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
-            
+            float ampOut2 = 0;
+            for (int i = 0; i < 30; i++){
+        float ampOut2 = 0.03 * i;
+            }
+        output[i * nChannels    ] = guitar.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
+
+        output[i * nChannels + 1] = guitar.dl(inOut[i],13000,0.7) + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] + loop4.myLoopOutput[i] + loop5.myLoopOutput[i] * ampOut2;
         }
 
         // convolve
-        // key f
         if (convolveOutput){
-            float ampOut3 = 0.5;
+            float ampOut3 = 0;
+            for (int i = 0; i < 30; i++){
+                ampOut3 = 0.03 * i;
+            }
             output[i * nChannels    ] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut + convolve4.convolveOut + convolve5.convolveOut * ampOut3;
             output[i * nChannels + 1] = convolve1.convolveOut + convolve2.convolveOut + convolve3.convolveOut + convolve4.convolveOut + convolve5.convolveOut * ampOut3;
         }
-        
-        //------- ALL STANDARD OUTPUTS -------//
-
-        // all the normal outputs plus SVF taking live audio as input.
-        
-//        output[i*nChannels    ] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
-//
-//        output[i*nChannels + 1] = myVarFilter.play(inOut[i], 1, 0, 0, 0) + myFace.dl(inOut[i],13000,0.7) + synth1.mySynthOutput + loop1.myLoopOutput[i] + loop2.myLoopOutput[i] + loop3.myLoopOutput[i] * ampOut;
-        
-        
-
-        // live audio feeding into SVF with band pass and notch being controlled by mouse X and Y
-        // low pass / band pass / high pass / notch
-//        output[i * nChannels] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
-//
-//        output[i * nChannels + 1] = ampOut * myVarFilter.play(inOut[i], 1, ofGetMouseX(), 0, ofGetMouseY());
-
-        
-        // SVF with synth and loops as inputs
-//        output[i * nChannels] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseX()) + inOut[i];
-//
-//        output[i * nChannels + 1] = ampOut * myVarFilter.play(synth1.mySynthOutput, 1, loop1.myLoopOutput[i], 0, ofGetMouseY()) + inOut[i];
-    
     }
 }
+    
 
 //----------------------------------------------------------------------------
 
@@ -577,9 +619,9 @@ void ofApp::audioReceived     (float * input, int bufferSize, int nChannels){
 void ofApp::keyPressed(int key){
     
     // loop 1 record and play
-    if (key == 'q'){
-        recordNow1 = true;
-    }
+//    if (key == 'q'){
+//        recordNow1 = true;
+//    }
 
     // loop 2
     if (key == 'a'){
@@ -676,9 +718,9 @@ void ofApp::keyPressed(int key){
 void ofApp::keyReleased(int key){
     
     // loop 1
-    if (key == 'q'){
-        recordNow1 = false;
-    }
+//    if (key == 'q'){
+//        recordNow1 = false;
+//    }
     
     // loop 2
     if (key == 'a'){

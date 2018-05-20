@@ -158,7 +158,7 @@ public:
     
     // ----- SEND ----- //
     // ofxOscSender object
-    ofxOscSender sender, senderActivation, senderDeactivation, sendActKNN, sendDeActKNN;
+    ofxOscSender sender, senderActivation, senderDeactivation, sendActKNN, sendDeActKNN, sendMidiOff;
     
     // IP address we're sending to
     string destination;

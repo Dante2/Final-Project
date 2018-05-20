@@ -16,7 +16,7 @@
 /* Looper */
 
 class looper  {
-    
+
     int counterRecord = 0;
     int loopLengthInSamples = 882100;
     bool loopRecord = false;

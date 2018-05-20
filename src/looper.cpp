@@ -15,6 +15,7 @@ using std::boolalpha;
 //-------- RECORD LOOP --------//
 
 double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool recording){
+    
     index = audioIndex;
     // cout << "record index = " << index << endl;
     loopLengthInSamples = loopLength;
@@ -37,7 +38,7 @@ double looper::recordLoop(int loopLength, int audioIndex, double signal[], bool 
     }
     
     if (myLoop[counterRecord] != 0){
-        
+//        stopRecord = false;
         playIt = true;
     }
 }
