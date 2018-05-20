@@ -170,7 +170,6 @@ void ofApp::update(){
         // ------ SWITCH WEKI KNN CLASSIFIER RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
         ofxOscMessage a, b;
-        //        if (RMS > 3){
         if (RMS > 0.2){
             switchedOn = true;
             a.setAddress("/wekinator/control/startRecording");
@@ -188,8 +187,6 @@ void ofApp::update(){
         
         // ------ SWITCH WEKI DTW RECORDING ON AND OFF WHEN SOUND DETECTED ----- //
         
-//        if (RMS > 3){
-//        if (RMS > 0.2){
         if (RMS > 0.2){
             switchedOn = true;
             n.setAddress("/wekinator/control/startDtwRecording");
@@ -209,69 +206,60 @@ void ofApp::update(){
     
     // ------ Pedal ------- //
     
-    while(receiverPedal.hasWaitingMessages()){
-        ofxOscMessage c;
-        ofxOscMessage q;
-        receiverPedal.getNextMessage(&c);
-        int pedal = c.getArgAsInt(0);
-
-        if(pedal == 1){
-            receiver1.getNextMessage(&q);
-            if(q.getAddress() == "/wek/outputs"){
-                messages = q.getAddress();
-                int classed = q.getArgAsFloat(0);
-                cout << "class = " << classed << endl;
-            }
-        }
-    // ------ Wekinator ------- //
+    
     
     while(receiver1.hasWaitingMessages()){
         
+        ofxOscMessage q;
+        receiver1.getNextMessage(&q);
         
-//        cout << boolalpha << "receiver 1 update = " << receiver1.getNextMessage(&q) << endl;
-        
-        // this all needs to be modified now.
-        
-        
-        
-        if(q.getAddress() == "1"){
+        if(q.getAddress() == "/output_1"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
             
+            playSynth = true;
+            allBasic = true;
+            
             // get class 2 for activation
-        } else if (q.getAddress() == "2"){
+        } else if (q.getAddress() == "/output_2"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
             
             // get class 3 for activation
-        } else if (q.getAddress() == "3"){
+        } else if (q.getAddress() == "/output_3"){
             messages = q.getAddress();
             cout << "message = " << messages << endl;
+            
+            playSynth = false;
+            allBasic = false;
+            
         }
     }
+    // Receiveing gesture output messages
     
-    // ----- Myo Mapper ----- //
+    // get class 1 for activation
+    
+    // ----- raw Myo data ----- //
     
     while(receiver2.hasWaitingMessages()) {
         ofxOscMessage p;
         receiver2.getNextMessage(&p);
-//        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
-
+        //        cout << boolalpha << "receiver 2 update = " << receiver2.getNextMessage(&p)<< endl;
+        
         if(p.getAddress() == "/myo1/emg/scaled/abs/mav/mavg"){
             emg = p.getArgAsFloat(0);
         }
-
+        
         // can't seem to get any gyro data through. I reckon this is down to Myo Mapper putting out the wrong OSC message for this selection.
         if(p.getAddress() == "/myo1/gyro/fod"){
             gyro = p.getArgAsFloat(0);
         }
-
+        
         if(p.getAddress() == "/myo1/orientation/quaternion"){
             quaternion = p.getArgAsFloat(0);
         }
     }
 }
-
 //--------------------------------------------------------------
 void ofApp::draw(){
 
